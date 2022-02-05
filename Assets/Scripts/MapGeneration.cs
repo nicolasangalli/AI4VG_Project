@@ -22,7 +22,6 @@ public class MapGeneration : MonoBehaviour
 
     //debug var
     public GameObject node;
-    private Edge[] path;
 
 
     // Start is called before the first frame update
