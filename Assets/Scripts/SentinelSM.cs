@@ -176,10 +176,10 @@ public class SentinelSM : MonoBehaviour
 		}
 	}
 
-	private void Update()
+	private void FixedUpdate()
     {
-		/*if(visible)
-        {*/
+		if(visible)
+        {
 			Vector3 vector = transform.forward * distanceOfView;
 
 			for (int i = -fov / 2; i <= fov / 2; i = i + stepOfView)
@@ -198,7 +198,7 @@ public class SentinelSM : MonoBehaviour
 					Debug.DrawRay(transform.position, v, Color.red, Time.deltaTime);
 				}
 			}
-		//}
+		}
 		
 	}
 

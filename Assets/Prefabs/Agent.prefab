@@ -130,6 +130,7 @@ MonoBehaviour:
   destination: {fileID: 0}
   speed: 1.5
   stopAt: 0.1
+  place: {fileID: 180157420949963988, guid: 0b235c282ae554359a3a016ff3b1968c, type: 3}
 --- !u!114 &-8230384026438804121
 MonoBehaviour:
   m_ObjectHideFlags: 0

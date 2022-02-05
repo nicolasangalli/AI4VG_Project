@@ -324,6 +324,9 @@ public class MapGeneration : MonoBehaviour
                 GameObject s = Instantiate(sentinel, sentinelPos, Quaternion.identity);
                 mapArray[i, j] = 3;
 
+Node n = GetNodeByMapLocation(i, j);
+graph.RemoveNode(n);
+
                 Ray nRay = new Ray(sentinelPos, s.transform.forward);
                 float nDistance = 0f;
                 Ray eRay = new Ray(sentinelPos, s.transform.right);

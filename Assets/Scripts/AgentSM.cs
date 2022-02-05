@@ -328,8 +328,9 @@ landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
 
     private void CalcPath()
     {
-        int iStart = -1;
-        int jStart = -1;
+
+        //int iStart = -1;
+        //int jStart = -1;
         int iFinish = -1;
         int jFinish = -1;
         for (int i = 0; i < map.mapArray.GetLength(0); i++)
@@ -338,8 +339,8 @@ landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
             {
                 if (map.mapArray[i, j] == 1)
                 {
-                    iStart = i;
-                    jStart = j;
+                    //iStart = i;
+                    //jStart = j;
                 }
                 if (map.mapArray[i, j] == 4)
                 {
@@ -349,10 +350,10 @@ landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
             }
         }
 
-        Node start = GetNodeByMapLocation(iStart, jStart);
+        //Node start = GetNodeByMapLocation(iStart, jStart);
         Node finish = GetNodeByMapLocation(iFinish, jFinish);
         AStarSolver.immediateStop = true;
-        path = AStarSolver.Solve(map.graph, start, finish, ManhattanEstimator);
+        path = AStarSolver.Solve(map.graph, currentNode, finish, ManhattanEstimator);
 
         if(path.Length == 0) //target non reachable
         {
