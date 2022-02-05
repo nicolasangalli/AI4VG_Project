@@ -4,6 +4,7 @@
 public class KMoveTo : MonoBehaviour
 {
 
+	[HideInInspector]
 	public Transform destination;
 	public float speed = 2f;
 	public float stopAt = 0.01f;
@@ -53,6 +54,7 @@ placed = true;
 //debug
 //placed = false;
 				gameObject.GetComponent<AgentSM>().nextPathNode = true;
+
             }
 		}
 	}

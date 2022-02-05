@@ -324,8 +324,8 @@ public class MapGeneration : MonoBehaviour
                 GameObject s = Instantiate(sentinel, sentinelPos, Quaternion.identity);
                 mapArray[i, j] = 3;
 
-Node n = GetNodeByMapLocation(i, j);
-graph.RemoveNode(n);
+//Node n = GetNodeByMapLocation(i, j);
+//graph.RemoveNode(n);
 
                 Ray nRay = new Ray(sentinelPos, s.transform.forward);
                 float nDistance = 0f;
@@ -427,38 +427,6 @@ graph.RemoveNode(n);
             print += "\n";
         }
         Debug.Log(print);
-
-        /*
-        Node[] nodes = graph.getNodes();
-        foreach (Node n in nodes)
-        {
-            Vector3 pos = GetMapLocationFromArray(startPoint, n.i, n.j);
-            Instantiate(node, pos, Quaternion.identity);
-            Edge[] edges = graph.getConnections(n);
-            //Debug.Log("neig: " + edges.Length);
-            foreach (Edge e in edges)
-            {
-                Vector3 posNeig = GetMapLocationFromArray(startPoint, e.to.i, e.to.j);
-                Debug.DrawLine(pos, posNeig, Color.red, 1000f);
-                //Debug.Log(e.from.description + " - " + e.to.description + " - " + e.weight);
-            }
-        }
-        /*
-        Debug.Log(path.Length);
-        if(path.Length > 0)
-        {
-            print = "(" + path[0].from.i + "," + path[0].from.j + ")";
-            Vector3 pos = GetMapLocationFromArray(startPoint, path[0].from.i, path[0].from.j);
-            Instantiate(node, pos, Quaternion.identity);
-            foreach (Edge e in path)
-            {
-                print += " => (" + e.to.i + "," + e.to.j + ")";
-                pos = GetMapLocationFromArray(startPoint, e.to.i, e.to.j);
-                Instantiate(node, pos, Quaternion.identity);
-            }
-            Debug.Log(print);
-        }
-         */
     }
 
 }

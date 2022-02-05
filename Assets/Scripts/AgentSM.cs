@@ -6,23 +6,27 @@ public class AgentSM : MonoBehaviour
 {
 
     public float reactionTime = 0.1f;
+    public Material quietMaterial;
+    public Material alarmMaterial;
     [HideInInspector]
     public bool nextPathNode;
 
     private MapGeneration map;
     private FSM fsm;
 
-    private Node prevNode;
-    private Node currentNode;
-    private Node nextNode;
-    private Node targetNode;
+    private Node prevNode; //previous node in the path
+    private Node currentNode; //current node in the graph / path
+    private Node nextNode; //next node in the path
+    private Node targetNode; //current target (standard or cover)
+    private Node oldTargetNode; //old target before entering cover state
 
-    private Edge[] path;
-    private int pathCounter;
-    private bool noPath;
-    private int landmarkOldPositionI;
-    private int landmarkOldPositionJ;
-    private GameObject midPosition;
+    private Edge[] path; //path to reach the target
+    private int pathCounter; //path step
+    private bool noPath; //no possible path between currentNode and targetNode
+    private GameObject midPosition; //mid step position
+    private bool resumeOldTarget; //if true the agent try to reach the old target
+    private bool coverReached; //cover target reachead
+    private FSMState cover;
 
 
     void Start()
@@ -48,27 +52,33 @@ public class AgentSM : MonoBehaviour
         }
         nextNode = null;
         targetNode = null;
+        oldTargetNode = null;
 
         path = null;
         pathCounter = 0;
         noPath = false;
         nextPathNode = false;
-        landmarkOldPositionI = -1;
-        landmarkOldPositionJ = -1;
         midPosition = new GameObject();
         midPosition.name = "Mid Target";
+        resumeOldTarget = false;
+        coverReached = false;
 
         FSMState reach = new FSMState();
+        reach.enterActions.Add(ChangeColor);
         reach.enterActions.Add(ResetPath);
         reach.enterActions.Add(SetTarget);
         reach.stayActions.Add(ReachTarget);
-        FSMState cover = new FSMState();
-        cover.enterActions.Add(SaveOldTargetPosition);
+        reach.exitActions.Add(SaveOldTarget);
+
+        cover = new FSMState();
+        cover.enterActions.Add(ChangeColor);
         cover.enterActions.Add(ResetPath);
-        cover.stayActions.Add(FindCover);
+        cover.enterActions.Add(FindCover);
+        cover.stayActions.Add(ReachTarget);
         cover.exitActions.Add(UpdateGraph);
+        cover.exitActions.Add(ResumeTarget);
+
         FSMState stuck = new FSMState();
-        stuck.enterActions.Add(ResetPath);
         stuck.enterActions.Add(StuckMsg);
 
         FSMTransition t1 = new FSMTransition(MapAlarm);
@@ -84,12 +94,27 @@ public class AgentSM : MonoBehaviour
         StartCoroutine(Patrol());
     }
 
+    private void ChangeColor()
+    {
+        if(gameObject.GetComponent<MeshRenderer>().material == quietMaterial)
+        {
+            gameObject.GetComponent<MeshRenderer>().material = alarmMaterial;
+        }
+        else
+        {
+            gameObject.GetComponent<MeshRenderer>().material = quietMaterial;
+        }
+    }
+
     private void ResetPath()
     {
         nextNode = null;
         if(targetNode != null)
         {
-            map.mapArray[targetNode.i, targetNode.j] = 0;
+            if(map.mapArray[targetNode.i, targetNode.j] == 4)
+            {
+                map.mapArray[targetNode.i, targetNode.j] = 0;
+            }
             targetNode = null;
         }
         
@@ -101,32 +126,16 @@ public class AgentSM : MonoBehaviour
 
     private void SetTarget()
     {
-        /*
-        if(landmarkOldPositionI != -1)
+        if(resumeOldTarget && oldTargetNode != null && map.mapArray[oldTargetNode.i, oldTargetNode.j] == 0)
         {
-Debug.Log("old position: " + landmarkOldPositionI + "," + landmarkOldPositionJ);
-Debug.Log("mapArray: " + map.mapArray[landmarkOldPositionI, landmarkOldPositionJ]);
-targetNode = GetNodeByMapLocation(landmarkOldPositionI, landmarkOldPositionI);
-Debug.Log(targetNode.description);
-            if(map.mapArray[landmarkOldPositionI, landmarkOldPositionJ] == 0 && targetNode != null)
-            {
-                map.mapArray[targetNode.i, targetNode.j] = 4;
-                map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j);
-                map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
-                map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = true;
-                landmarkOldPositionI = -1;
-                landmarkOldPositionJ = -1;
-            }
-            else
-            {
-                landmarkOldPositionI = -1;
-                landmarkOldPositionJ = -1;
-                SetTarget();
-            }
+            targetNode = oldTargetNode;
+            map.mapArray[targetNode.i, targetNode.j] = 4;
+            map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j);
+            map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
+            map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = true;
         }
         else
         {
-        */
             int i = Random.Range(0, map.mapArray.GetLength(0) - 1);
             int j = Random.Range(0, map.mapArray.GetLength(1) - 1);
             while (map.mapArray[i, j] != 4)
@@ -145,7 +154,8 @@ Debug.Log(targetNode.description);
                     j = Random.Range(0, map.mapArray.GetLength(1) - 1);
                 }
             }
-        //}
+        }
+        resumeOldTarget = false;
     }
 
     private void ReachTarget()
@@ -185,63 +195,61 @@ Debug.Log(targetNode.description);
                     currentNode = nextNode;
                     map.mapArray[currentNode.i, currentNode.j] = 1;
 
-                    ResetPath();
-                    SetTarget();
+                    if(fsm.current == cover) //reached the cover target
+                    {
+                        coverReached = true;
+                    } else //reached standard target, goes to the next one
+                    {
+                        ResetPath();
+                        SetTarget();
+                    }
                 }
             }
         }
     }
 
-    private void SaveOldTargetPosition()
+    private void SaveOldTarget()
     {
         if(targetNode != null)
         {
-            landmarkOldPositionI = targetNode.i;
-            landmarkOldPositionJ = targetNode.j;
+            oldTargetNode = targetNode;
         }
     }
 
     private void FindCover()
     {
-        if (targetNode == null)
+        int step = 0;
+        while (targetNode == null)
         {
-            int step = 0;
-            while (targetNode == null)
+            for (int x = currentNode.i - step; x <= currentNode.i + step; x++)
             {
-                for (int x = currentNode.i - step; x <= currentNode.i + step; x++)
+                for (int z = currentNode.j - step; z <= currentNode.j + step; z++)
                 {
-                    for (int z = currentNode.j - step; z <= currentNode.j + step; z++)
+                    if (x >= 0 && x < map.mapArray.GetLength(0) && z >= 0 && z < map.mapArray.GetLength(1))
                     {
-                        if (x >= 0 && x < map.mapArray.GetLength(0) && z >= 0 && z < map.mapArray.GetLength(1))
+                        if (map.mapArray[x, z] == 0)
                         {
-                            if (map.mapArray[x, z] == 0)
+                            Node candidate = GetNodeByMapLocation(x, z);
+                            if (candidate.inSentinelView == false)
                             {
-                                Node candidate = GetNodeByMapLocation(x, z);
-                                if (candidate.inSentinelView == false)
-                                {
-                                    targetNode = candidate;
-                                    break;
-                                }
+                                targetNode = candidate;
+                                break;
                             }
                         }
                     }
-                    if (targetNode != null)
-                    {
-                        break;
-                    }
                 }
-                step++;
+                if (targetNode != null)
+                {
+                    break;
+                }
             }
+            step++;
+        }
 
-            map.mapArray[targetNode.i, targetNode.j] = 4;
-            map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j);
-            map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
-            map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
-        }
-        else
-        {
-            ReachTarget();
-        }
+        map.mapArray[targetNode.i, targetNode.j] = 4;
+        map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j);
+        map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
+        map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
     }
 
     private void UpdateGraph()
@@ -255,6 +263,12 @@ Debug.Log(targetNode.description);
                 map.graph.RemoveNode(n);
             }
         }
+map.DebugPrint();
+    }
+
+    private void ResumeTarget()
+    {
+        resumeOldTarget = true;
     }
 
     private void StuckMsg()
@@ -296,7 +310,15 @@ Debug.Log(targetNode.description);
 
     private bool MapNotAlarm()
     {
-        return !MapAlarm();
+        if (map.gameObject.GetComponent<MapSM>().GetActiveSentinels().Count == 0 && coverReached == true)
+        {
+            coverReached = false;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     private bool NoPath()
@@ -327,6 +349,26 @@ Debug.Log(targetNode.description);
     private Vector3 GetMapLocationFromArray(Vector3 startPoint, int i, int j)
     {
         return new Vector3(startPoint.x + i, 0.25f, startPoint.z + j);
+    }
+
+    private Node GetNearestNode(Vector3 agentPos)
+    {
+        float minDistance = float.MaxValue;
+        Node nearestNode = null;
+
+        Node[] nodes = map.graph.getNodes();
+        foreach(Node n in nodes)
+        {
+            Vector3 pos = GetMapLocationFromArray(map.startPoint, n.i, n.j);
+            float distance = (pos - agentPos).magnitude;
+            if(distance < minDistance && map.mapArray[n.i, n.j] == 0)
+            {
+                minDistance = distance;
+                nearestNode = n;
+            }
+        }
+
+        return nearestNode;
     }
 
     private IEnumerator Patrol()

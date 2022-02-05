@@ -14,7 +14,8 @@ public class SentinelSM : MonoBehaviour
 	private int stepOfView;
 	private GameObject map;
 	private FSM fsm;
-	private bool showed;
+
+	public bool showed;
 
 
 	void Start()
@@ -125,8 +126,6 @@ public class SentinelSM : MonoBehaviour
 			}
 			DestroyImmediate(nodeGO);
 		}
-
-		map.GetComponent<MapGeneration>().DebugPrint();
 	}
 
 	private void AddSentinel()
@@ -187,11 +186,11 @@ public class SentinelSM : MonoBehaviour
 
 				if (hitted == true && hit.collider.gameObject.tag == "Obstacle")
 				{
-					Debug.DrawRay(transform.position, v.normalized * (hit.point - transform.position).magnitude, Color.red, Time.deltaTime);
+					Debug.DrawRay(transform.position, v.normalized * (hit.point - transform.position).magnitude, Color.cyan, Time.deltaTime);
 				}
 				else
 				{
-					Debug.DrawRay(transform.position, v, Color.red, Time.deltaTime);
+					Debug.DrawRay(transform.position, v, Color.cyan, Time.deltaTime);
 				}
 			}
 		}
