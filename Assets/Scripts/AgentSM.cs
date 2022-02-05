@@ -96,14 +96,18 @@ public class AgentSM : MonoBehaviour
 
     private void ChangeColor()
     {
-        if(gameObject.GetComponent<MeshRenderer>().material == quietMaterial)
+        if(fsm != null)
         {
-            gameObject.GetComponent<MeshRenderer>().material = alarmMaterial;
+            if (gameObject.GetComponent<MeshRenderer>().material.color == alarmMaterial.color)
+            {
+                gameObject.GetComponent<MeshRenderer>().material = quietMaterial;
+            }
+            else
+            {
+                gameObject.GetComponent<MeshRenderer>().material = alarmMaterial;
+            }
         }
-        else
-        {
-            gameObject.GetComponent<MeshRenderer>().material = quietMaterial;
-        }
+        
     }
 
     private void ResetPath()
