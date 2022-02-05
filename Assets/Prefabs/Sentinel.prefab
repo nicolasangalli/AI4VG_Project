@@ -97,4 +97,4 @@ MonoBehaviour:
   reactionTime: 0.05
   fov: 90
   distanceOfView: 2
-  node: {fileID: 7274761762315427646, guid: dcf1ae2838fc2409e8f7487f52b3002e, type: 3}
+  node: {fileID: 3209594342910113975, guid: bffb4702f2f7c48da8057008d1c333cf, type: 3}

@@ -9,16 +9,14 @@ public class SentinelSM : MonoBehaviour
 	[Range(90, 120)]
 	public int fov = 90;
 	public float distanceOfView = 2f;
+	public GameObject node;
 
 	private int stepOfView;
 	private GameObject map;
 	private FSM fsm;
 	private bool showed;
 
-	//debug
-	public GameObject node;
 
-	// Start is called before the first frame update
 	void Start()
     {
 		stepOfView = 2;
@@ -174,7 +172,7 @@ public class SentinelSM : MonoBehaviour
 		}
 	}
 
-	private void FixedUpdate()
+	void FixedUpdate()
     {
 		if(showed)
         {

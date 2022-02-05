@@ -101,9 +101,13 @@ public class AgentSM : MonoBehaviour
 
     private void SetTarget()
     {
+        /*
         if(landmarkOldPositionI != -1)
         {
-            targetNode = GetNodeByMapLocation(landmarkOldPositionI, landmarkOldPositionI);
+Debug.Log("old position: " + landmarkOldPositionI + "," + landmarkOldPositionJ);
+Debug.Log("mapArray: " + map.mapArray[landmarkOldPositionI, landmarkOldPositionJ]);
+targetNode = GetNodeByMapLocation(landmarkOldPositionI, landmarkOldPositionI);
+Debug.Log(targetNode.description);
             if(map.mapArray[landmarkOldPositionI, landmarkOldPositionJ] == 0 && targetNode != null)
             {
                 map.mapArray[targetNode.i, targetNode.j] = 4;
@@ -122,6 +126,7 @@ public class AgentSM : MonoBehaviour
         }
         else
         {
+        */
             int i = Random.Range(0, map.mapArray.GetLength(0) - 1);
             int j = Random.Range(0, map.mapArray.GetLength(1) - 1);
             while (map.mapArray[i, j] != 4)
@@ -140,7 +145,7 @@ public class AgentSM : MonoBehaviour
                     j = Random.Range(0, map.mapArray.GetLength(1) - 1);
                 }
             }
-        }
+        //}
     }
 
     private void ReachTarget()

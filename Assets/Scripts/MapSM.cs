@@ -56,20 +56,7 @@ public class MapSM : MonoBehaviour
 
     private bool NoSentinelActive()
     {
-        if(activeSentinels.Count == 0)
-        {
-            return true;
-        }
-        return false;
-    }
-
-    private IEnumerator Patrol()
-    {
-        while (true)
-        {
-            fsm.Update();
-            yield return new WaitForSeconds(reactionTime);
-        }
+        return !SentinelActive();
     }
 
     public void AddActiveSentinel(GameObject sentinel)
@@ -85,6 +72,15 @@ public class MapSM : MonoBehaviour
     public List<GameObject> GetActiveSentinels()
     {
         return activeSentinels;
+    }
+
+    private IEnumerator Patrol()
+    {
+        while (true)
+        {
+            fsm.Update();
+            yield return new WaitForSeconds(reactionTime);
+        }
     }
 
 }

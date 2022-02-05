@@ -81,12 +81,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4395350861713803120, guid: aaa12658981404287a9f208be3baafdd, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4395350861713803120, guid: aaa12658981404287a9f208be3baafdd, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: c2a9a3d16f1f740b68ec7ee7336879bb, type: 2}
     - target: {fileID: 8336818410717295274, guid: aaa12658981404287a9f208be3baafdd, type: 3}
       propertyPath: m_Name
-      value: NodeRed
+      value: Node
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aaa12658981404287a9f208be3baafdd, type: 3}

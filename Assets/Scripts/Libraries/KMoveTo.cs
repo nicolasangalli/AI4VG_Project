@@ -8,21 +8,22 @@ public class KMoveTo : MonoBehaviour
 	public float speed = 2f;
 	public float stopAt = 0.01f;
 
+	/*
 	//debug
 	public GameObject place;
-	private bool placed;
+	private bool placed;*/
 
 	void Start()
     {
-		placed = false;
-		place = Instantiate(place, new Vector3(400, 400, 400), Quaternion.identity);
+		//placed = false;
+		//place = Instantiate(place, new Vector3(400, 400, 400), Quaternion.identity);
 	}
 
     void FixedUpdate ()
 	{
 		if(destination)
 		{
-
+/*
 //debug
 if(placed == false)
 {
@@ -30,7 +31,7 @@ place.transform.position = destination.position;
 place.transform.rotation = destination.rotation;
 placed = true;
 }
-
+*/
 
 			Vector3 verticalAdj = new Vector3 (destination.position.x, transform.position.y, destination.position.z);
 			Vector3 toDestination = (verticalAdj - transform.position);
@@ -50,7 +51,7 @@ placed = true;
 			else
             {
 //debug
-placed = false;
+//placed = false;
 				gameObject.GetComponent<AgentSM>().nextPathNode = true;
             }
 		}
