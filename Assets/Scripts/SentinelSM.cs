@@ -4,15 +4,16 @@ using UnityEngine;
 
 public class SentinelSM : MonoBehaviour
 {
+
 	public float reactionTime = 0.1f;
 	[Range(90, 120)]
-	public int fov = 120;
-	public float distanceOfView = 2.5f;
+	public int fov = 90;
+	public float distanceOfView = 2f;
 
 	private int stepOfView;
 	private GameObject map;
 	private FSM fsm;
-	private bool visible = false;
+	private bool showed;
 
 	//debug
 	public GameObject node;
@@ -22,6 +23,7 @@ public class SentinelSM : MonoBehaviour
     {
 		stepOfView = 2;
 		map = GameObject.FindGameObjectWithTag("Map");
+		showed = false;
 
 		FSMState hide = new FSMState();
 		hide.exitActions.Add(SentinelShow);
@@ -47,21 +49,17 @@ public class SentinelSM : MonoBehaviour
 	private void SentinelShow()
     {
 		GetComponent<Renderer>().enabled = true;
-		visible = true;
+		showed = true;
     }
 
-	public void MarkNode() {
+	private void MarkNode() {
 		Vector3 a = transform.forward * distanceOfView;
 
 		Node[] nodes = map.GetComponent<MapGeneration>().graph.getNodes();
-		//map = GameObject.FindGameObjectWithTag("Map");
-		//Node[] nodes = map.GetComponent<TestGraph>().graph.getNodes();
 
 		foreach (Node n in nodes)
 		{
 			Vector3 nPosition = map.GetComponent<MapGeneration>().GetMapLocationFromArray(map.GetComponent<MapGeneration>().startPoint, n.i, n.j);
-			//Vector3 nPosition = map.GetComponent<TestGraph>().GetMapLocationFromArray(map.GetComponent<TestGraph>().startPoint, n.i, n.j);
-
 			Vector3 b = nPosition - transform.position;
 			float angle = Mathf.Rad2Deg * Mathf.Acos(Vector3.Dot(a, b) / (a.magnitude * b.magnitude));
 
@@ -114,7 +112,6 @@ public class SentinelSM : MonoBehaviour
 				Node n = map.GetComponent<MapGeneration>().graph.GetNodeByGameobject(hit.collider.gameObject);
 				if(n != null)
                 {
-//map.GetComponent<MapGeneration>().mapArray[n.i, n.j] = -1;
 					DestroyImmediate(n.sceneObject);
 				}
 			}
@@ -124,7 +121,8 @@ public class SentinelSM : MonoBehaviour
 		foreach(GameObject nodeGO in nodesLeft)
         {
 			Node node = map.GetComponent<MapGeneration>().graph.GetNodeByGameobject(nodeGO);
-			if(map.GetComponent<MapGeneration>().mapArray[node.i, node.j] != 3) {
+			if(map.GetComponent<MapGeneration>().mapArray[node.i, node.j] != 3)
+			{
 				node.inSentinelView = false;
 			}
 			DestroyImmediate(nodeGO);
@@ -178,7 +176,7 @@ public class SentinelSM : MonoBehaviour
 
 	private void FixedUpdate()
     {
-		if(visible)
+		if(showed)
         {
 			Vector3 vector = transform.forward * distanceOfView;
 

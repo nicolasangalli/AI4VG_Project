@@ -1,6 +1,8 @@
 ﻿using UnityEngine;
 
-public class KMoveTo : MonoBehaviour {
+
+public class KMoveTo : MonoBehaviour
+{
 
 	public Transform destination;
 	public float speed = 2f;
@@ -16,11 +18,14 @@ public class KMoveTo : MonoBehaviour {
 		place = Instantiate(place, new Vector3(400, 400, 400), Quaternion.identity);
 	}
 
-    void FixedUpdate () {
-		if (destination) {
+    void FixedUpdate ()
+	{
+		if(destination)
+		{
+
+//debug
 if(placed == false)
 {
-Debug.Log(destination.position);
 place.transform.position = destination.position;
 place.transform.rotation = destination.rotation;
 placed = true;
@@ -29,7 +34,8 @@ placed = true;
 
 			Vector3 verticalAdj = new Vector3 (destination.position.x, transform.position.y, destination.position.z);
 			Vector3 toDestination = (verticalAdj - transform.position);
-			if (toDestination.magnitude > stopAt) {
+			if(toDestination.magnitude > stopAt)
+			{
 
 				// option a : we look at the destination position but with "our" height
 				//transform.LookAt (verticalAdj);
@@ -40,11 +46,14 @@ placed = true;
 				transform.rotation = Quaternion.Euler (rotationAdj);
 
 				transform.position += transform.forward * speed * Time.deltaTime;
-			} else
+			}
+			else
             {
+//debug
 placed = false;
 				gameObject.GetComponent<AgentSM>().nextPathNode = true;
             }
 		}
 	}
+
 }

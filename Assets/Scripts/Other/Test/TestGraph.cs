@@ -68,7 +68,7 @@ public class TestGraph : MonoBehaviour
         {
             if (Input.GetKeyUp(KeyCode.Space))
             {
-                sentinel.GetComponent<SentinelSM>().MarkNode();
+                //sentinel.GetComponent<SentinelSM>().MarkNode();
                 for (int i = 0; i < mapArray.GetLength(0); i++)
                 {
                     for (int j = 0; j < mapArray.GetLength(1); j++)
