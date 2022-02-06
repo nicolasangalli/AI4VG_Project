@@ -267,7 +267,6 @@ public class AgentSM : MonoBehaviour
                 map.graph.RemoveNode(n);
             }
         }
-map.DebugPrint();
     }
 
     private void ResumeTarget()

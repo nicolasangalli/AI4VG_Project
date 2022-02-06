@@ -12,6 +12,7 @@ public class MapGeneration : MonoBehaviour
     [Range(1, 3)]
     public int nSentinel = 3;
     public GameObject landmark; //istance
+    public GameObject node; //used by sentinel to mark node
 
     [HideInInspector]
     public Vector3 startPoint;
@@ -20,11 +21,7 @@ public class MapGeneration : MonoBehaviour
 
     private bool mapGenerated;
 
-    //debug var
-    public GameObject node;
-
-
-    // Start is called before the first frame update
+   
     void Start()
     {
         Application.targetFrameRate = 60;
@@ -45,18 +42,6 @@ public class MapGeneration : MonoBehaviour
 
         startPoint = new Vector3(transform.position.x - mapDimension.x / 2 + 0.5f, 0f, transform.position.z - mapDimension.z / 2 + 0.5f);
         GenerateObstacles(startPoint);
-
-        //debug
-        for (int i = 0; i < mapArray.GetLength(0); i++)
-        {
-            for (int j = 0; j < mapArray.GetLength(1); j++)
-            {
-                if (mapArray[i, j] == 1)
-                {
-                    mapArray[i, j] = 2;
-                }
-            }
-        }
 
         graph = new Graph();
         GenerateGraph();
@@ -191,6 +176,18 @@ public class MapGeneration : MonoBehaviour
                 }
             }
         }
+
+        //debug
+        for (int i = 0; i < mapArray.GetLength(0); i++)
+        {
+            for (int j = 0; j < mapArray.GetLength(1); j++)
+            {
+                if (mapArray[i, j] == 1)
+                {
+                    mapArray[i, j] = 2;
+                }
+            }
+        }
     }
 
     //check if all neighbours of point (x,z) (except the point (prevX, prevZ)) are already visited
@@ -281,7 +278,7 @@ public class MapGeneration : MonoBehaviour
     }
 
     //gets node from mapArray indexes
-    public Node GetNodeByMapLocation(int i, int j)
+    private Node GetNodeByMapLocation(int i, int j)
     {
         Node[] nodes = graph.getNodes();
         foreach(Node n in nodes)
@@ -318,103 +315,125 @@ public class MapGeneration : MonoBehaviour
         {
             int i = Random.Range(0, mapArray.GetLength(0) - 1);
             int j = Random.Range(0, mapArray.GetLength(1) - 1);
+
             if (mapArray[i, j] == 0)
             {
                 Vector3 sentinelPos = GetMapLocationFromArray(startPoint, i, j);
-                GameObject s = Instantiate(sentinel, sentinelPos, Quaternion.identity);
-                mapArray[i, j] = 3;
+                bool enoughDistance = EnoughDistance(sentinelPos);
+                if (enoughDistance)
+                {
+                    GameObject s = Instantiate(sentinel, sentinelPos, Quaternion.identity);
+                    mapArray[i, j] = 3;
 
-//Node n = GetNodeByMapLocation(i, j);
-//graph.RemoveNode(n);
+                    Ray nRay = new Ray(sentinelPos, s.transform.forward);
+                    float nDistance = 0f;
+                    Ray eRay = new Ray(sentinelPos, s.transform.right);
+                    float eDistance = 0f;
+                    Ray sRay = new Ray(sentinelPos, -s.transform.forward);
+                    float sDistance = 0f;
+                    Ray wRay = new Ray(sentinelPos, -s.transform.right);
+                    float wDistance = 0f;
 
-                Ray nRay = new Ray(sentinelPos, s.transform.forward);
-                float nDistance = 0f;
-                Ray eRay = new Ray(sentinelPos, s.transform.right);
-                float eDistance = 0f;
-                Ray sRay = new Ray(sentinelPos, -s.transform.forward);
-                float sDistance = 0f;
-                Ray wRay = new Ray(sentinelPos, -s.transform.right);
-                float wDistance = 0f;
+                    RaycastHit nHit;
+                    bool nHitted = Physics.Raycast(nRay, out nHit, s.GetComponent<SentinelSM>().distanceOfView);
+                    if (nHitted == true && nHit.collider.gameObject.tag == "Obstacle")
+                    {
+                        nDistance = (nHit.collider.gameObject.transform.position - s.transform.position).magnitude;
+                    }
+                    else
+                    {
+                        nDistance = float.MaxValue;
+                    }
+                    RaycastHit eHit;
+                    bool eHitted = Physics.Raycast(eRay, out eHit, s.GetComponent<SentinelSM>().distanceOfView);
+                    if (eHitted == true && eHit.collider.gameObject.tag == "Obstacle")
+                    {
+                        eDistance = (eHit.collider.gameObject.transform.position - s.transform.position).magnitude;
+                    }
+                    else
+                    {
+                        eDistance = float.MaxValue;
+                    }
+                    RaycastHit sHit;
+                    bool sHitted = Physics.Raycast(sRay, out sHit, s.GetComponent<SentinelSM>().distanceOfView);
+                    if (sHitted == true && sHit.collider.gameObject.tag == "Obstacle")
+                    {
+                        sDistance = (sHit.collider.gameObject.transform.position - s.transform.position).magnitude;
+                    }
+                    else
+                    {
+                        sDistance = float.MaxValue;
+                    }
+                    RaycastHit wHit;
+                    bool wHitted = Physics.Raycast(wRay, out wHit, s.GetComponent<SentinelSM>().distanceOfView);
+                    if (wHitted == true && wHit.collider.gameObject.tag == "Obstacle")
+                    {
+                        wDistance = (wHit.collider.gameObject.transform.position - s.transform.position).magnitude;
+                    }
+                    else
+                    {
+                        wDistance = float.MaxValue;
+                    }
 
-                RaycastHit nHit;
-                bool nHitted = Physics.Raycast(nRay, out nHit, s.GetComponent<SentinelSM>().distanceOfView);
-                if (nHitted == true && nHit.collider.gameObject.tag == "Obstacle")
-                {
-                    nDistance = (nHit.collider.gameObject.transform.position - s.transform.position).magnitude;
-                } else
-                {
-                    nDistance = float.MaxValue;
-                }
-                RaycastHit eHit;
-                bool eHitted = Physics.Raycast(eRay, out eHit, s.GetComponent<SentinelSM>().distanceOfView);
-                if (eHitted == true && eHit.collider.gameObject.tag == "Obstacle")
-                {
-                    eDistance = (eHit.collider.gameObject.transform.position - s.transform.position).magnitude;
-                }
-                else
-                {
-                    eDistance = float.MaxValue;
-                }
-                RaycastHit sHit;
-                bool sHitted = Physics.Raycast(sRay, out sHit, s.GetComponent<SentinelSM>().distanceOfView);
-                if (sHitted == true && sHit.collider.gameObject.tag == "Obstacle")
-                {
-                    sDistance = (sHit.collider.gameObject.transform.position - s.transform.position).magnitude;
-                }
-                else
-                {
-                    sDistance = float.MaxValue;
-                }
-                RaycastHit wHit;
-                bool wHitted = Physics.Raycast(wRay, out wHit, s.GetComponent<SentinelSM>().distanceOfView);
-                if (wHitted == true && wHit.collider.gameObject.tag == "Obstacle")
-                {
-                    wDistance = (wHit.collider.gameObject.transform.position - s.transform.position).magnitude;
-                }
-                else
-                {
-                    wDistance = float.MaxValue;
-                }
+                    float maxVal = -1f;
+                    if (nDistance > maxVal)
+                    {
+                        maxVal = nDistance;
+                    }
+                    if (eDistance > maxVal)
+                    {
+                        maxVal = eDistance;
+                    }
+                    if (sDistance > maxVal)
+                    {
+                        maxVal = sDistance;
+                    }
+                    if (wDistance > maxVal)
+                    {
+                        maxVal = wDistance;
+                    }
 
-                float maxVal = -1f;
-                if(nDistance>maxVal)
-                {
-                    maxVal = nDistance;
+                    if (maxVal == eDistance)
+                    {
+                        s.transform.rotation = Quaternion.Euler(0, 90, 0);
+                    }
+                    else if (maxVal == sDistance)
+                    {
+                        s.transform.rotation = Quaternion.Euler(0, 180, 0);
+                    }
+                    else if (maxVal == wDistance)
+                    {
+                        s.transform.rotation = Quaternion.Euler(0, -90, 0);
+                    }
                 }
-                if (eDistance > maxVal)
-                {
-                    maxVal = eDistance;
-                }
-                if(sDistance > maxVal)
-                {
-                    maxVal = sDistance;
-                }
-                if(wDistance > maxVal)
-                {
-                    maxVal = wDistance;
-                }
-
-                if(maxVal == eDistance)
-                {
-                    s.transform.rotation = Quaternion.Euler(0, 90, 0);
-                }
-                else if(maxVal == sDistance)
-                {
-                    s.transform.rotation = Quaternion.Euler(0, 180, 0);
-                }
-                else if(maxVal == wDistance)
-                {
-                    s.transform.rotation = Quaternion.Euler(0, -90, 0);
-                }
-
             }
         }
 
         landmark = Instantiate(landmark, new Vector3(100, 100, 100), Quaternion.identity);
     }
 
+    //check if there is enough distance from sentinelPos and the other sentinels
+    private bool EnoughDistance(Vector3 sentinelPos)
+    {
+        GameObject[] sentinels = GameObject.FindGameObjectsWithTag("Sentinel");
+        if(sentinels.Length > 0)
+        {
+            foreach(GameObject otherSentinel in sentinels)
+            {
+                float distance = (otherSentinel.transform.position - sentinelPos).magnitude;
+                if(distance <= otherSentinel.GetComponent<SentinelSM>().distanceOfView)
+                {
+                    return false;
+                }
+            }
+            return true;
+        } else
+        {
+            return true;
+        }
+    }
 
-    public void DebugPrint()
+    private void DebugPrint()
     {
         string print = "";
         for (int i = 0; i < mapArray.GetLength(0); i++)

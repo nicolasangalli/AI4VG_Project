@@ -415,8 +415,8 @@ MonoBehaviour:
   sentinel: {fileID: 2168816773573861913, guid: 9669f90097d2a4b7c8ab24caa49877d9, type: 3}
   nSentinel: 3
   landmark: {fileID: 1688431507817098, guid: 947be8148d471475fb9c3d5fb2ce36a4, type: 3}
-  startPoint: {x: 0, y: 0, z: 0}
   node: {fileID: 3209594342910113975, guid: bffb4702f2f7c48da8057008d1c333cf, type: 3}
+  startPoint: {x: 0, y: 0, z: 0}
 --- !u!114 &2077074560
 MonoBehaviour:
   m_ObjectHideFlags: 0

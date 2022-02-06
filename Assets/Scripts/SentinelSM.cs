@@ -15,7 +15,7 @@ public class SentinelSM : MonoBehaviour
 	private GameObject map;
 	private FSM fsm;
 
-	public bool showed;
+	private bool showed;
 
 
 	void Start()

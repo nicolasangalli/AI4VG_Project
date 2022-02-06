@@ -96,7 +96,7 @@ public class TestGraph : MonoBehaviour
     void Update()
     {
         sentinel.GetComponent<MeshRenderer>().enabled = true;
-        sentinel.GetComponent<SentinelSM>().showed = true;
+        //sentinel.GetComponent<SentinelSM>().showed = true;
 
         /*
         if(marked == false)
