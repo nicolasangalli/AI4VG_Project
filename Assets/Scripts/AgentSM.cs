@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 
@@ -222,8 +223,10 @@ public class AgentSM : MonoBehaviour
 
     private void FindCover()
     {
+        List<Node> candidateNodes = new List<Node>();
         int step = 0;
-        while (targetNode == null)
+
+        while (candidateNodes.Count == 0)
         {
             for (int x = currentNode.i - step; x <= currentNode.i + step; x++)
             {
@@ -236,20 +239,17 @@ public class AgentSM : MonoBehaviour
                             Node candidate = GetNodeByMapLocation(x, z);
                             if (candidate.inSentinelView == false)
                             {
-                                targetNode = candidate;
-                                break;
+                                candidateNodes.Add(candidate);
                             }
                         }
                     }
-                }
-                if (targetNode != null)
-                {
-                    break;
                 }
             }
             step++;
         }
 
+        int index = Random.Range(0, candidateNodes.Count - 1);
+        targetNode = candidateNodes[index];
         map.mapArray[targetNode.i, targetNode.j] = 4;
         map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j);
         map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;

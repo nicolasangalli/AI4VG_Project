@@ -327,8 +327,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nodeGreen: {fileID: 8336818410717295274, guid: aaa12658981404287a9f208be3baafdd, type: 3}
-  nodeRed: {fileID: 3209594342910113975, guid: bffb4702f2f7c48da8057008d1c333cf, type: 3}
-  nodeBlue: {fileID: -1628933833117899583, guid: 3030cadec62104779838328830e15292, type: 3}
+  nodeRed: {fileID: 6612062618195598821, guid: f1b2099c3869847e2b51735cfecceb0f, type: 3}
+  nodeBlue: {fileID: 5226690637383591423, guid: 087e71f75b90346d6959a283977eb737, type: 3}
+  obstacle: {fileID: 180157420949963988, guid: 0b235c282ae554359a3a016ff3b1968c, type: 3}
   agent: {fileID: 8584145401203932126, guid: 66ab8a02c802143e487c3bb2012739d7, type: 3}
   sentinel: {fileID: 2168816773573861913, guid: 9669f90097d2a4b7c8ab24caa49877d9, type: 3}
   landmark: {fileID: 1688431507817098, guid: 947be8148d471475fb9c3d5fb2ce36a4, type: 3}

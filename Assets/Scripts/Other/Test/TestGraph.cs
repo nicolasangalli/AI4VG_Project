@@ -8,6 +8,7 @@ public class TestGraph : MonoBehaviour
     public GameObject nodeGreen;
     public GameObject nodeRed;
     public GameObject nodeBlue;
+    public GameObject obstacle;
     public GameObject agent;
     public GameObject sentinel;
     public GameObject landmark;
@@ -16,13 +17,17 @@ public class TestGraph : MonoBehaviour
     public int[,] mapArray;
     public Graph graph;
 
-    private bool marked;
+    //private bool marked;
+
+
+    private Node currentNode;
+    private Node targetNode;
 
     // Start is called before the first frame update
     void Start()
     {
         Application.targetFrameRate = 60;
-        marked = false;
+        //marked = false;
 
         float xSize = gameObject.GetComponent<MeshFilter>().mesh.bounds.size.x;
         float zSize = gameObject.GetComponent<MeshFilter>().mesh.bounds.size.z;
@@ -39,40 +44,67 @@ public class TestGraph : MonoBehaviour
 
         startPoint = new Vector3(transform.position.x - mapDimension.x / 2 + 0.5f, 0f, transform.position.z - mapDimension.z / 2 + 0.5f);
 
+        
+        mapArray[7, 6] = 2;
+        Vector3 posObstacle = GetMapLocationFromArray(startPoint, 7, 6);
+        Instantiate(obstacle, posObstacle, Quaternion.identity);
+        /*mapArray[7, 8] = 2;
+        posObstacle = GetMapLocationFromArray(startPoint, 7, 8);
+        Instantiate(obstacle, posObstacle, Quaternion.identity);*/
+        mapArray[8, 8] = 2;
+        posObstacle = GetMapLocationFromArray(startPoint, 8, 8);
+        Instantiate(obstacle, posObstacle, Quaternion.identity);
+
         graph = new Graph();
         GenerateGraph();
-        //PrintNode();
+
+
+        Node n = GetNodeByMapLocation(6, 7);
+        n.inSentinelView = true;
+        //Instantiate(nodeRed, GetMapLocationFromArray(startPoint, n.i, n.j), Quaternion.identity);
+        n = GetNodeByMapLocation(7, 7);
+        n.inSentinelView = true;
+        //Instantiate(nodeRed, GetMapLocationFromArray(startPoint, n.i, n.j), Quaternion.identity);
+        n = GetNodeByMapLocation(7, 8);
+        n.inSentinelView = true;
+        n = GetNodeByMapLocation(8, 6);
+        n.inSentinelView = true;
+        //Instantiate(nodeRed, GetMapLocationFromArray(startPoint, n.i, n.j), Quaternion.identity);
+        n = GetNodeByMapLocation(8, 7);
+        n.inSentinelView = true;
+        //Instantiate(nodeRed, GetMapLocationFromArray(startPoint, n.i, n.j), Quaternion.identity);
+
+        mapArray[7, 7] = 1;
+        currentNode = GetNodeByMapLocation(7, 8);
+
+        FindCover();
+        //mapArray[targetNode.i, targetNode.j] = 4;
+
 
         mapArray[6, 7] = 3;
         Vector3 posSentinel = GetMapLocationFromArray(startPoint, 6, 7);
         sentinel = Instantiate(sentinel, posSentinel, Quaternion.Euler(0, 90, 0));
 
-        mapArray[12, 7] = 1;
-        Vector3 posPlayer = GetMapLocationFromArray(startPoint, 12, 7);
-        agent = Instantiate(agent, posPlayer, Quaternion.identity);
+        //mapArray[12, 7] = 1;
+        //Vector3 posPlayer = GetMapLocationFromArray(startPoint, 12, 7);
+        //agent = Instantiate(agent, posPlayer, Quaternion.identity);
 
+        PrintNode();
         DebugPrint();
-
-        Vector3 a = sentinel.transform.forward * 2;
-        //Debug.Log(a);
-        Vector3 nPosition = GetMapLocationFromArray(startPoint, 7, 7);
-        Vector3 b = nPosition - sentinel.transform.position;
-        //Debug.Log(b);
-        float angle = Mathf.Rad2Deg * Mathf.Acos(Vector3.Dot(a, b) / (a.magnitude * b.magnitude));
-        //Debug.Log(angle);
     }
 
     void Update()
     {
         sentinel.GetComponent<MeshRenderer>().enabled = true;
         sentinel.GetComponent<SentinelSM>().showed = true;
+
         /*
         if(marked == false)
         {
             if (Input.GetKeyUp(KeyCode.Space))
             {
-                //sentinel.GetComponent<SentinelSM>().MarkNode();
-                for (int i = 0; i < mapArray.GetLength(0); i++)
+                sentinel.GetComponent<SentinelSM>().MarkNode();
+                /*for (int i = 0; i < mapArray.GetLength(0); i++)
                 {
                     for (int j = 0; j < mapArray.GetLength(1); j++)
                     {
@@ -99,8 +131,9 @@ public class TestGraph : MonoBehaviour
                         mapArray[n.i, n.j] = -1;
                         DestroyImmediate(n.sceneObject);
                     }
-                    
                 }
+                
+                
 
                 GameObject go = GameObject.FindWithTag("Node");
                 Node sNode = graph.GetNodeByGameobject(go);
@@ -169,6 +202,55 @@ public class TestGraph : MonoBehaviour
         }
     }
 
+
+    private void FindCover()
+    {
+        List<Node> candidateNodes = new List<Node>();
+        int step = 0;
+        while (candidateNodes.Count == 0)
+        {
+            for (int x = currentNode.i - step; x <= currentNode.i + step; x++)
+            {
+                for (int z = currentNode.j - step; z <= currentNode.j + step; z++)
+                {
+                    if (x >= 0 && x < mapArray.GetLength(0) && z >= 0 && z < mapArray.GetLength(1))
+                    {
+                        if (mapArray[x, z] == 0)
+                        {
+                            Node candidate = GetNodeByMapLocation(x, z);
+                            if (candidate.inSentinelView == false)
+                            {
+                                candidateNodes.Add(candidate);
+                            }
+                        }
+                    }
+                }
+            }
+            step++;
+        }
+
+        int index = Random.Range(0, candidateNodes.Count - 1);
+        targetNode = candidateNodes[index];
+        foreach (Node c in candidateNodes)
+        {
+            if (c == targetNode)
+            {
+                Instantiate(nodeGreen, GetMapLocationFromArray(startPoint, c.i, c.j), Quaternion.identity);
+            }
+            else
+            {
+                Instantiate(nodeBlue, GetMapLocationFromArray(startPoint, c.i, c.j), Quaternion.identity);
+            }
+        }
+
+        
+
+    }
+
+
+
+
+
     public Node GetNodeByMapLocation(int i, int j)
     {
         Node[] nodes = graph.getNodes();
@@ -190,35 +272,41 @@ public class TestGraph : MonoBehaviour
 
     private void PrintNode()
     {
-        GameObject[] nodes = GameObject.FindGameObjectsWithTag("Node");
+        /*GameObject[] nodes = GameObject.FindGameObjectsWithTag("Node");
         foreach(GameObject go in nodes)
         {
             DestroyImmediate(go);
-        }
+        }*/
 
         for (int i = 0; i < mapArray.GetLength(0); i++)
         {
             for (int j = 0; j < mapArray.GetLength(1); j++)
             {
                 Vector3 pos = GetMapLocationFromArray(startPoint, i, j);
-                if(mapArray[i,j] >= 0)
+                if(mapArray[i,j] != 2)
                 {
-                    if(i == 7 && j == 7)
+                    Node n = GetNodeByMapLocation(i, j);
+                    if(n.inSentinelView)
                     {
-                        Instantiate(nodeBlue, pos, Quaternion.identity);
+                        Instantiate(nodeRed, pos, Quaternion.identity);
                     } else
                     {
-                        Instantiate(nodeGreen, pos, Quaternion.identity);
+                        if(mapArray[i,j] == 4)
+                        {
+                            Instantiate(nodeBlue, pos, Quaternion.identity);
+                        }
+                        else
+                        {
+                            //Instantiate(nodeGreen, pos, Quaternion.identity);
+                        }
+                        
                     }
-                    
-                } else
-                {
-                    //Instantiate(nodeRed, pos, Quaternion.identity);
                 }
-                
             }
         }
     }
+
+
 
     private void DebugPrint()
     { 
