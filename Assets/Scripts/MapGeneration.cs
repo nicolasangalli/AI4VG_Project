@@ -300,17 +300,6 @@ public class MapGeneration : MonoBehaviour
     //set player, sentinels and landmark in the map
     private void GenerateCharacters()
     {
-        while(GameObject.FindWithTag("Agent") == null)
-        {
-            int i = Random.Range(0, mapArray.GetLength(0) - 1);
-            int j = Random.Range(0, mapArray.GetLength(1) - 1);
-            if (mapArray[i, j] == 0)
-            {
-                agent = Instantiate(agent, GetMapLocationFromArray(startPoint, i, j), Quaternion.identity);
-                mapArray[i, j] = 1;
-            }
-        }
-
         while(GameObject.FindGameObjectsWithTag("Sentinel").Length < nSentinel)
         {
             int i = Random.Range(0, mapArray.GetLength(0) - 1);
@@ -409,19 +398,35 @@ public class MapGeneration : MonoBehaviour
             }
         }
 
+        while (GameObject.FindWithTag("Agent") == null)
+        {
+            int i = Random.Range(0, mapArray.GetLength(0) - 1);
+            int j = Random.Range(0, mapArray.GetLength(1) - 1);
+            if (mapArray[i, j] == 0)
+            {
+                Vector3 agentPos = GetMapLocationFromArray(startPoint, i, j);
+                bool enoughDistance = EnoughDistance(agentPos);
+                if(enoughDistance)
+                {
+                    agent = Instantiate(agent, GetMapLocationFromArray(startPoint, i, j), Quaternion.identity);
+                    mapArray[i, j] = 1;
+                }
+            }
+        }
+
         landmark = Instantiate(landmark, new Vector3(100, 100, 100), Quaternion.identity);
     }
 
-    //check if there is enough distance from sentinelPos and the other sentinels
-    private bool EnoughDistance(Vector3 sentinelPos)
+    //check if there is enough distance from a pos and the other sentinels
+    private bool EnoughDistance(Vector3 myPos)
     {
         GameObject[] sentinels = GameObject.FindGameObjectsWithTag("Sentinel");
         if(sentinels.Length > 0)
         {
             foreach(GameObject otherSentinel in sentinels)
             {
-                float distance = (otherSentinel.transform.position - sentinelPos).magnitude;
-                if(distance <= otherSentinel.GetComponent<SentinelSM>().distanceOfView)
+                float distance = (otherSentinel.transform.position - myPos).magnitude;
+                if(distance + 2f <= otherSentinel.GetComponent<SentinelSM>().distanceOfView)
                 {
                     return false;
                 }

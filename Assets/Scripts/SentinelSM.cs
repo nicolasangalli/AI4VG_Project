@@ -8,6 +8,7 @@ public class SentinelSM : MonoBehaviour
 	public float reactionTime = 0.1f;
 	[Range(90, 120)]
 	public int fov = 90;
+	[Range(1f, 4f)]
 	public float distanceOfView = 2f;
 	public GameObject node;
 

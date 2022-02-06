@@ -98,4 +98,3 @@ MonoBehaviour:
   fov: 90
   distanceOfView: 2
   node: {fileID: 3209594342910113975, guid: bffb4702f2f7c48da8057008d1c333cf, type: 3}
-  showed: 1
