@@ -141,8 +141,8 @@ public class AgentSM : MonoBehaviour
         }
         else
         {
-            int i = Random.Range(0, map.mapArray.GetLength(0) - 1);
-            int j = Random.Range(0, map.mapArray.GetLength(1) - 1);
+            int i = Random.Range(0, map.mapArray.GetLength(0));
+            int j = Random.Range(0, map.mapArray.GetLength(1));
             while (map.mapArray[i, j] != 4)
             {
                 if (map.mapArray[i, j] == 0)
@@ -155,8 +155,8 @@ public class AgentSM : MonoBehaviour
                 }
                 else
                 {
-                    i = Random.Range(0, map.mapArray.GetLength(0) - 1);
-                    j = Random.Range(0, map.mapArray.GetLength(1) - 1);
+                    i = Random.Range(0, map.mapArray.GetLength(0));
+                    j = Random.Range(0, map.mapArray.GetLength(1));
                 }
             }
         }
@@ -248,7 +248,7 @@ public class AgentSM : MonoBehaviour
             step++;
         }
 
-        int index = Random.Range(0, candidateNodes.Count - 1);
+        int index = Random.Range(0, candidateNodes.Count);
         targetNode = candidateNodes[index];
         map.mapArray[targetNode.i, targetNode.j] = 4;
         map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j) - new Vector3(0f, 0.25f, 0f);

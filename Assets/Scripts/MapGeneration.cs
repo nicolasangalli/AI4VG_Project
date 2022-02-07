@@ -77,7 +77,7 @@ public class MapGeneration : MonoBehaviour
                     int z = j;  //point visited at this step k
                     int prevX = i;  //point visited in the prev step of k
                     int prevZ = j;  //point visited in the prev step of k
-                    int direction = Random.Range(1, 4); //direction of multidimensional obstacle creation (N, E, S, W)
+                    int direction = Random.Range(1, 5); //direction of multidimensional obstacle creation (N, E, S, W)
 
                     int obstacleLength = Random.Range(1, 3); //choose the obstacle length
                     for(int k=1; k<=obstacleLength; k++)
@@ -302,8 +302,8 @@ public class MapGeneration : MonoBehaviour
     {
         while(GameObject.FindGameObjectsWithTag("Sentinel").Length < nSentinel)
         {
-            int i = Random.Range(0, mapArray.GetLength(0) - 1);
-            int j = Random.Range(0, mapArray.GetLength(1) - 1);
+            int i = Random.Range(0, mapArray.GetLength(0));
+            int j = Random.Range(0, mapArray.GetLength(1));
 
             if (mapArray[i, j] == 0)
             {
@@ -332,8 +332,8 @@ public class MapGeneration : MonoBehaviour
 
         while (GameObject.FindWithTag("Agent") == null)
         {
-            int i = Random.Range(0, mapArray.GetLength(0) - 1);
-            int j = Random.Range(0, mapArray.GetLength(1) - 1);
+            int i = Random.Range(0, mapArray.GetLength(0));
+            int j = Random.Range(0, mapArray.GetLength(1));
             if (mapArray[i, j] == 0)
             {
                 Vector3 agentPos = GetMapLocationFromArray(startPoint, i, j);
