@@ -312,88 +312,20 @@ public class MapGeneration : MonoBehaviour
                 if (enoughDistance)
                 {
                     GameObject s = Instantiate(sentinel, sentinelPos, Quaternion.identity);
+                    float angle = 0f;
+                    int dir = Random.Range(0, 4);
+                    if(dir == 0)
+                    {
+                        angle = -90f;
+                    } else if(dir == 2)
+                    {
+                        angle = 90f;
+                    } else if(dir == 3)
+                    {
+                        angle = 180f;
+                    }
+                    s.transform.rotation = Quaternion.Euler(0, angle, 0);
                     mapArray[i, j] = 3;
-
-                    Ray nRay = new Ray(sentinelPos, s.transform.forward);
-                    float nDistance = 0f;
-                    Ray eRay = new Ray(sentinelPos, s.transform.right);
-                    float eDistance = 0f;
-                    Ray sRay = new Ray(sentinelPos, -s.transform.forward);
-                    float sDistance = 0f;
-                    Ray wRay = new Ray(sentinelPos, -s.transform.right);
-                    float wDistance = 0f;
-
-                    RaycastHit nHit;
-                    bool nHitted = Physics.Raycast(nRay, out nHit, s.GetComponent<SentinelSM>().distanceOfView);
-                    if (nHitted == true && nHit.collider.gameObject.tag == "Obstacle")
-                    {
-                        nDistance = (nHit.collider.gameObject.transform.position - s.transform.position).magnitude;
-                    }
-                    else
-                    {
-                        nDistance = float.MaxValue;
-                    }
-                    RaycastHit eHit;
-                    bool eHitted = Physics.Raycast(eRay, out eHit, s.GetComponent<SentinelSM>().distanceOfView);
-                    if (eHitted == true && eHit.collider.gameObject.tag == "Obstacle")
-                    {
-                        eDistance = (eHit.collider.gameObject.transform.position - s.transform.position).magnitude;
-                    }
-                    else
-                    {
-                        eDistance = float.MaxValue;
-                    }
-                    RaycastHit sHit;
-                    bool sHitted = Physics.Raycast(sRay, out sHit, s.GetComponent<SentinelSM>().distanceOfView);
-                    if (sHitted == true && sHit.collider.gameObject.tag == "Obstacle")
-                    {
-                        sDistance = (sHit.collider.gameObject.transform.position - s.transform.position).magnitude;
-                    }
-                    else
-                    {
-                        sDistance = float.MaxValue;
-                    }
-                    RaycastHit wHit;
-                    bool wHitted = Physics.Raycast(wRay, out wHit, s.GetComponent<SentinelSM>().distanceOfView);
-                    if (wHitted == true && wHit.collider.gameObject.tag == "Obstacle")
-                    {
-                        wDistance = (wHit.collider.gameObject.transform.position - s.transform.position).magnitude;
-                    }
-                    else
-                    {
-                        wDistance = float.MaxValue;
-                    }
-
-                    float maxVal = -1f;
-                    if (nDistance > maxVal)
-                    {
-                        maxVal = nDistance;
-                    }
-                    if (eDistance > maxVal)
-                    {
-                        maxVal = eDistance;
-                    }
-                    if (sDistance > maxVal)
-                    {
-                        maxVal = sDistance;
-                    }
-                    if (wDistance > maxVal)
-                    {
-                        maxVal = wDistance;
-                    }
-
-                    if (maxVal == eDistance)
-                    {
-                        s.transform.rotation = Quaternion.Euler(0, 90, 0);
-                    }
-                    else if (maxVal == sDistance)
-                    {
-                        s.transform.rotation = Quaternion.Euler(0, 180, 0);
-                    }
-                    else if (maxVal == wDistance)
-                    {
-                        s.transform.rotation = Quaternion.Euler(0, -90, 0);
-                    }
                 }
             }
         }
@@ -426,7 +358,7 @@ public class MapGeneration : MonoBehaviour
             foreach(GameObject otherSentinel in sentinels)
             {
                 float distance = (otherSentinel.transform.position - myPos).magnitude;
-                if(distance + 2f <= otherSentinel.GetComponent<SentinelSM>().distanceOfView)
+                if(distance <= otherSentinel.GetComponent<SentinelSM>().distanceOfView + 2f)
                 {
                     return false;
                 }
