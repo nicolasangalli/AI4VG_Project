@@ -26,6 +26,7 @@ public class SentinelSM : MonoBehaviour
 		showed = false;
 
 		FSMState hide = new FSMState();
+		hide.enterActions.Add(SentinelHide);
 		hide.exitActions.Add(SentinelShow);
 		FSMState alarm = new FSMState();
 		alarm.enterActions.Add(MarkNode);
@@ -45,6 +46,11 @@ public class SentinelSM : MonoBehaviour
 		StartCoroutine(Patrol());
 		
 	}
+
+	private void SentinelHide()
+    {
+		GetComponent<Renderer>().enabled = false;
+	}
 	
 	private void SentinelShow()
     {
@@ -61,43 +67,49 @@ public class SentinelSM : MonoBehaviour
 		{
 			Vector3 nPosition = map.GetComponent<MapGeneration>().GetMapLocationFromArray(map.GetComponent<MapGeneration>().startPoint, n.i, n.j);
 			Vector3 b = nPosition - transform.position;
-			float angle = Mathf.Rad2Deg * Mathf.Acos(Vector3.Dot(a, b) / (a.magnitude * b.magnitude));
+			if(b.magnitude != 0)
+            {
+				float angle = Mathf.Rad2Deg * Mathf.Acos(Vector3.Dot(a, b) / (a.magnitude * b.magnitude));
 
-			if (angle > fov / 2 + 10f)
-			{
-				n.inSentinelView = false;
-			}
-			else
-			{
-				if (angle <= fov / 2)
+				if (angle > fov / 2 + 10f)
 				{
-					if (b.magnitude > distanceOfView + 0.4f)
-					{
-						n.inSentinelView = false;
-					}
-					else
-					{
-						n.inSentinelView = true;
-					}
+					n.inSentinelView = false;
 				}
 				else
 				{
-					if (b.magnitude > distanceOfView)
+					if (angle <= fov / 2)
 					{
-						n.inSentinelView = false;
+						if (b.magnitude > distanceOfView + 0.4f)
+						{
+							n.inSentinelView = false;
+						}
+						else
+						{
+							n.inSentinelView = true;
+						}
 					}
 					else
 					{
-						n.inSentinelView = true;
+						if (b.magnitude > distanceOfView)
+						{
+							n.inSentinelView = false;
+						}
+						else
+						{
+							n.inSentinelView = true;
+						}
 					}
 				}
 			}
-
+			else
+            {
+				n.inSentinelView = true;
+            }
+			
 			if(n.inSentinelView)
             {
 				n.sceneObject = Instantiate(map.GetComponent<MapGeneration>().node, map.GetComponent<MapGeneration>().GetMapLocationFromArray(map.GetComponent<MapGeneration>().startPoint, n.i, n.j), Quaternion.identity);
 			}
-
 		}
 
 		for (int i = -fov / 2; i <= fov / 2; i = i + stepOfView)
