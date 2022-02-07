@@ -135,7 +135,7 @@ public class AgentSM : MonoBehaviour
         {
             targetNode = oldTargetNode;
             map.mapArray[targetNode.i, targetNode.j] = 4;
-            map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j);
+            map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j) - new Vector3(0f, 0.25f, 0f);
             map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
             map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = true;
         }
@@ -149,7 +149,7 @@ public class AgentSM : MonoBehaviour
                 {
                     targetNode = GetNodeByMapLocation(i, j);
                     map.mapArray[targetNode.i, targetNode.j] = 4;
-                    map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, i, j);
+                    map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, i, j) - new Vector3(0f, 0.25f, 0f);
                     map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
                     map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = true;
                 }
@@ -187,7 +187,7 @@ public class AgentSM : MonoBehaviour
                     }
                     nextNode = path[pathCounter].to;
 
-                    midPosition.transform.position = GetMapLocationFromArray(map.startPoint, nextNode.i, nextNode.j);
+                    midPosition.transform.position = GetMapLocationFromArray(map.startPoint, nextNode.i, nextNode.j) - new Vector3(0f, 0.25f, 0f);
                     gameObject.GetComponent<KMoveTo>().destination = midPosition.transform;
 
                     pathCounter++;
@@ -251,7 +251,7 @@ public class AgentSM : MonoBehaviour
         int index = Random.Range(0, candidateNodes.Count - 1);
         targetNode = candidateNodes[index];
         map.mapArray[targetNode.i, targetNode.j] = 4;
-        map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j);
+        map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j) - new Vector3(0f, 0.25f, 0f);
         map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
         map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
     }
@@ -276,7 +276,7 @@ public class AgentSM : MonoBehaviour
 
     private void StuckMsg()
     {
-        Debug.Log("Impossibile raggiungere il bersaglio senza essere scoperti!");
+        UnityEditor.EditorUtility.DisplayDialog("Stuck state", "The target is not reachable avoiding the sentinels!", "OK");
     }
 
     private void CalcPath()
