@@ -167,6 +167,15 @@ public class SentinelSM : MonoBehaviour
 			}
 		}
 
+		GameObject agent = GameObject.FindWithTag("Agent");
+		float r1 = agent.GetComponent<MeshCollider>().bounds.size.x / 2;
+		float r2 = gameObject.GetComponent<MeshRenderer>().bounds.size.x / 2;
+		float distance = (agent.transform.position - transform.position).magnitude - r1 - r2;
+		if (distance < 0.05f)
+		{
+			return true;
+		}
+
 		return false;
 	}
 

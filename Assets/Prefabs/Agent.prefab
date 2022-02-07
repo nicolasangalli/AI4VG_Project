@@ -224,7 +224,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5746ef124b6ba40f386f79c5533ce3ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  reactionTime: 0.1
+  reactionTime: 0.05
   quietMaterial: {fileID: 2100000, guid: 68317e9e03b424c2f8e47987b0da1676, type: 2}
   alarmMaterial: {fileID: 2100000, guid: c2a9a3d16f1f740b68ec7ee7336879bb, type: 2}
   nextPathNode: 0
