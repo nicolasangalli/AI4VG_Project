@@ -74,14 +74,14 @@ public class TestGraph : MonoBehaviour
         n.inSentinelView = true;
         //Instantiate(nodeRed, GetMapLocationFromArray(startPoint, n.i, n.j), Quaternion.identity);
 
-        mapArray[7, 7] = 1;
-        currentNode = GetNodeByMapLocation(7, 8);
+        mapArray[6, 7] = 1;
+        currentNode = GetNodeByMapLocation(6, 7);
 
         FindCover();
         //mapArray[targetNode.i, targetNode.j] = 4;
 
 
-        mapArray[6, 7] = 3;
+        //mapArray[6, 7] = 3;
         Vector3 posSentinel = GetMapLocationFromArray(startPoint, 6, 7);
         sentinel = Instantiate(sentinel, posSentinel, Quaternion.Euler(0, 90, 0));
 
@@ -209,6 +209,7 @@ public class TestGraph : MonoBehaviour
         int step = 0;
         while (candidateNodes.Count == 0)
         {
+            Debug.Log("step " + step);
             for (int x = currentNode.i - step; x <= currentNode.i + step; x++)
             {
                 for (int z = currentNode.j - step; z <= currentNode.j + step; z++)
@@ -229,7 +230,7 @@ public class TestGraph : MonoBehaviour
             step++;
         }
 
-        int index = Random.Range(0, candidateNodes.Count - 1);
+        int index = Random.Range(0, candidateNodes.Count);
         targetNode = candidateNodes[index];
         foreach (Node c in candidateNodes)
         {
