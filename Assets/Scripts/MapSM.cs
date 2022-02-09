@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class MapSM : MonoBehaviour
 {
+
     public float reactionTime = 0.1f;
     public GameObject directionalLight;
 
@@ -15,6 +16,7 @@ public class MapSM : MonoBehaviour
     {
         FSMState quiet = new FSMState();
         quiet.enterActions.Add(LightOn);
+
         FSMState alarm = new FSMState();
         alarm.enterActions.Add(LightOff);
 
@@ -39,7 +41,7 @@ public class MapSM : MonoBehaviour
 
     private void LightOff()
     {
-        if (directionalLight.activeInHierarchy)
+        if(directionalLight.activeInHierarchy)
         {
             directionalLight.SetActive(false);
         }
@@ -76,7 +78,7 @@ public class MapSM : MonoBehaviour
 
     private IEnumerator Patrol()
     {
-        while (true)
+        while(true)
         {
             fsm.Update();
             yield return new WaitForSeconds(reactionTime);

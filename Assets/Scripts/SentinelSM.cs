@@ -13,7 +13,8 @@ public class SentinelSM : MonoBehaviour
 	public int distanceOfView = 2;
 
 	private int stepOfView;
-	private GameObject map;
+	private MapGeneration map;
+	private MapSM mapSM;
 	private FSM fsm;
 	private bool showed;
 
@@ -21,15 +22,18 @@ public class SentinelSM : MonoBehaviour
 	void Start()
     {
 		stepOfView = 2;
-		map = GameObject.FindGameObjectWithTag("Map");
+		map = GameObject.FindGameObjectWithTag("Map").GetComponent<MapGeneration>();
+		mapSM = GameObject.FindGameObjectWithTag("Map").GetComponent<MapSM>();
 		showed = false;
 
 		FSMState hide = new FSMState();
 		hide.enterActions.Add(SentinelHide);
 		hide.exitActions.Add(SentinelShow);
+
 		FSMState alarm = new FSMState();
 		alarm.enterActions.Add(MarkNode);
 		alarm.enterActions.Add(AddSentinel);
+
 		FSMState visible = new FSMState();
 		visible.enterActions.Add(RemoveSentinel);
 
@@ -43,7 +47,6 @@ public class SentinelSM : MonoBehaviour
 		fsm = new FSM(hide);
 
 		StartCoroutine(Patrol());
-		
 	}
 
 	private void SentinelHide()
@@ -60,25 +63,24 @@ public class SentinelSM : MonoBehaviour
 	private void MarkNode() {
 		Vector3 a = transform.forward * distanceOfView;
 
-		Node[] nodes = map.GetComponent<MapGeneration>().graph.getNodes();
-
-		foreach (Node n in nodes)
+		Node[] nodes = map.graph.getNodes();
+		foreach(Node n in nodes)
 		{
-			Vector3 nPosition = map.GetComponent<MapGeneration>().GetMapLocationFromArray(map.GetComponent<MapGeneration>().startPoint, n.i, n.j);
+			Vector3 nPosition = map.GetMapLocationFromArray(map.startPoint, n.i, n.j);
 			Vector3 b = nPosition - transform.position;
 			if(b.magnitude != 0)
             {
 				float angle = Mathf.Rad2Deg * Mathf.Acos(Vector3.Dot(a, b) / (a.magnitude * b.magnitude));
 
-				if (angle > fov / 2 + 10f)
+				if(angle > fov / 2 + 10f)
 				{
 					n.inSentinelView = false;
 				}
 				else
 				{
-					if (angle <= fov / 2)
+					if(angle <= fov / 2)
 					{
-						if (b.magnitude > distanceOfView + 0.4f)
+						if(b.magnitude > distanceOfView + 0.4f)
 						{
 							n.inSentinelView = false;
 						}
@@ -89,7 +91,7 @@ public class SentinelSM : MonoBehaviour
 					}
 					else
 					{
-						if (b.magnitude > distanceOfView)
+						if(b.magnitude > distanceOfView)
 						{
 							n.inSentinelView = false;
 						}
@@ -107,20 +109,20 @@ public class SentinelSM : MonoBehaviour
 			
 			if(n.inSentinelView)
             {
-				n.sceneObject = Instantiate(node, map.GetComponent<MapGeneration>().GetMapLocationFromArray(map.GetComponent<MapGeneration>().startPoint, n.i, n.j), Quaternion.identity);
+				n.sceneObject = Instantiate(node, map.GetMapLocationFromArray(map.startPoint, n.i, n.j), Quaternion.identity);
 			}
 		}
 
-		for (int i = -fov / 2; i <= fov / 2; i = i + stepOfView)
+		for(int i = -fov/2; i <= fov/2; i = i+stepOfView)
 		{
 			Vector3 v = Quaternion.AngleAxis(i, transform.up) * a;
 			Ray ray = new Ray(transform.position, v);
 			RaycastHit hit;
 			bool hitted = Physics.Raycast(ray, out hit, v.magnitude);
 
-			if (hitted == true && hit.collider.gameObject.tag == "Node")
+			if(hitted == true && hit.collider.gameObject.tag == "Node")
 			{
-				Node n = map.GetComponent<MapGeneration>().graph.GetNodeByGameobject(hit.collider.gameObject);
+				Node n = map.graph.GetNodeByGameobject(hit.collider.gameObject);
 				if(n != null)
                 {
 					DestroyImmediate(n.sceneObject);
@@ -131,8 +133,8 @@ public class SentinelSM : MonoBehaviour
 		GameObject[] nodesLeft = GameObject.FindGameObjectsWithTag("Node");
 		foreach(GameObject nodeGO in nodesLeft)
         {
-			Node node = map.GetComponent<MapGeneration>().graph.GetNodeByGameobject(nodeGO);
-			if(map.GetComponent<MapGeneration>().mapArray[node.i, node.j] != 3)
+			Node node = map.graph.GetNodeByGameobject(nodeGO);
+			if(map.mapArray[node.i, node.j] != 3)
 			{
 				node.inSentinelView = false;
 			}
@@ -142,25 +144,26 @@ public class SentinelSM : MonoBehaviour
 
 	private void AddSentinel()
     {
-		map.GetComponent<MapSM>().AddActiveSentinel(gameObject);
+		mapSM.AddActiveSentinel(gameObject);
     }
 
 	private void RemoveSentinel()
     {
-		map.GetComponent<MapSM>().RemoveActiveSentinel(gameObject);
+		mapSM.RemoveActiveSentinel(gameObject);
     }
 
 	private bool AgentVisible()
     {
 		Vector3 vector = transform.forward * distanceOfView;
 
-		for (int i = -fov / 2; i <= fov / 2; i = i + stepOfView)
+		for(int i = -fov/2; i <= fov/2; i = i+stepOfView)
 		{
 			Vector3 v = Quaternion.AngleAxis(i, transform.up) * vector;
 			Ray ray = new Ray(transform.position, v);
 			RaycastHit hit;
 			bool hitted = Physics.Raycast(ray, out hit, v.magnitude);
-			if (hitted == true && hit.collider.gameObject.tag == "Agent")
+
+			if(hitted == true && hit.collider.gameObject.tag == "Agent")
 			{
 				return true;
 			}
@@ -170,7 +173,7 @@ public class SentinelSM : MonoBehaviour
 		float r1 = agent.GetComponent<MeshCollider>().bounds.size.x / 2;
 		float r2 = gameObject.GetComponent<MeshRenderer>().bounds.size.x / 2;
 		float distance = (agent.transform.position - transform.position).magnitude - r1 - r2;
-		if (distance < 0.05f)
+		if(distance < 0.05f)
 		{
 			return true;
 		}
@@ -185,7 +188,7 @@ public class SentinelSM : MonoBehaviour
 
 	private IEnumerator Patrol()
 	{
-		while (true)
+		while(true)
 		{
 			fsm.Update();
 			yield return new WaitForSeconds(reactionTime);
@@ -198,14 +201,14 @@ public class SentinelSM : MonoBehaviour
         {
 			Vector3 vector = transform.forward * distanceOfView;
 
-			for (int i = -fov / 2; i <= fov / 2; i = i + stepOfView)
+			for(int i = -fov/2; i <= fov/2; i = i+stepOfView)
 			{
 				Vector3 v = Quaternion.AngleAxis(i, transform.up) * vector;
 				Ray ray = new Ray(transform.position, v);
 				RaycastHit hit;
 				bool hitted = Physics.Raycast(ray, out hit, v.magnitude);
 
-				if (hitted == true && hit.collider.gameObject.tag == "Obstacle")
+				if(hitted == true && hit.collider.gameObject.tag == "Obstacle")
 				{
 					Debug.DrawRay(transform.position, v.normalized * (hit.point - transform.position).magnitude, Color.cyan, Time.deltaTime);
 				}

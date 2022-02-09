@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class MapGeneration : MonoBehaviour
 {
+
     public GameObject obstacle; //prefab
     public GameObject agent; //istance
     public GameObject sentinel; //prefab
@@ -23,6 +24,7 @@ public class MapGeneration : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = 60;
+
         obstacleProb = 35;
         mapGenerated = false;
 
@@ -31,9 +33,9 @@ public class MapGeneration : MonoBehaviour
         Vector3 mapDimension = new Vector3(xSize * transform.localScale.x, 0f, zSize * transform.localScale.z);
 
         mapArray = new int[(int)mapDimension.x, (int)mapDimension.z];
-        for (int i = 0; i < mapArray.GetLength(0); i++)
+        for(int i = 0; i < mapArray.GetLength(0); i++)
         {
-            for (int j = 0; j < mapArray.GetLength(1); j++)
+            for(int j = 0; j < mapArray.GetLength(1); j++)
             {
                 mapArray[i, j] = 0;
             }
@@ -66,9 +68,9 @@ public class MapGeneration : MonoBehaviour
     //generates random position for obstacles and instantiate them
     private void GenerateObstacles(Vector3 startPoint)
     {
-        for(int i=1; i<mapArray.GetLength(0)-1; i++)
+        for(int i = 1; i < mapArray.GetLength(0)-1; i++)
         {
-            for(int j=1; j<mapArray.GetLength(1)-1; j++)
+            for(int j = 1; j < mapArray.GetLength(1)-1; j++)
             {
                 if(mapArray[i,j] == 0) //check if the point is not already visited
                 {
@@ -79,7 +81,7 @@ public class MapGeneration : MonoBehaviour
                     int direction = Random.Range(1, 5); //direction of multidimensional obstacle creation (N, E, S, W)
 
                     int obstacleLength = Random.Range(1, 3); //choose the obstacle length
-                    for(int k=1; k<=obstacleLength; k++)
+                    for(int k = 1; k <= obstacleLength; k++)
                     {
                         if(FreePoint(x, z, prevX, prevZ))
                         {
@@ -123,25 +125,24 @@ public class MapGeneration : MonoBehaviour
             }
         }
 
-        for (int i=0; i<mapArray.GetLength(0); i++)
+        for(int i = 0; i < mapArray.GetLength(0); i++)
         {
             List<int> list = new List<int>();
-            for (int j=0; j<mapArray.GetLength(1); j++)
+            for(int j = 0; j < mapArray.GetLength(1); j++)
             {
-                if (mapArray[i, j] == 1)
+                if(mapArray[i, j] == 1)
                 {
                     list.Add(j);
                 }
                 else
                 {
-                    if (list.Count > 1)
+                    if(list.Count > 1)
                     {
-                        foreach (int elem in list)
+                        foreach(int elem in list)
                         {
                             mapArray[i, elem] = 2;
                         }
 
-                        //obstacle.transform.parent = gameObject.transform;
                         obstacle.transform.localScale = new Vector3(0.5f, 0.5f, 1f * list.Count);
                         Instantiate(obstacle, new Vector3(startPoint.x + i, 0.25f, startPoint.z + Avg(list)), Quaternion.identity);
                     }
@@ -150,20 +151,20 @@ public class MapGeneration : MonoBehaviour
             }
         }
 
-        for (int j=0; j<mapArray.GetLength(1); j++)
+        for(int j = 0; j < mapArray.GetLength(1); j++)
         {
             List<int> list = new List<int>();
-            for (int i=0; i<mapArray.GetLength(0); i++)
+            for(int i = 0; i < mapArray.GetLength(0); i++)
             {
-                if (mapArray[i, j] == 1)
+                if(mapArray[i, j] == 1)
                 {
                     list.Add(i);
                 }
                 else
                 {
-                    if (list.Count > 0)
+                    if(list.Count > 0)
                     {
-                        foreach (int elem in list)
+                        foreach(int elem in list)
                         {
                             mapArray[elem, j] = 2;
                         }
@@ -176,12 +177,11 @@ public class MapGeneration : MonoBehaviour
             }
         }
 
-        //debug
-        for (int i = 0; i < mapArray.GetLength(0); i++)
+        for(int i = 0; i < mapArray.GetLength(0); i++)
         {
-            for (int j = 0; j < mapArray.GetLength(1); j++)
+            for(int j = 0; j < mapArray.GetLength(1); j++)
             {
-                if (mapArray[i, j] == 1)
+                if(mapArray[i, j] == 1)
                 {
                     mapArray[i, j] = 2;
                 }
@@ -192,13 +192,13 @@ public class MapGeneration : MonoBehaviour
     //check if all neighbours of point (x,z) (except the point (prevX, prevZ)) are already visited
     private bool FreePoint(int x, int z, int prevX, int prevZ)
     {
-        for(int i=x-1; i<=x+1; i++)
+        for(int i = x-1; i <= x+1; i++)
         {
-            for(int j=z-1; j<=z+1; j++)
+            for(int j = z-1; j <= z+1; j++)
             {
-                if(i>=0 && i<mapArray.GetLength(0) && j>=0 && j<mapArray.GetLength(1))
+                if(i >= 0 && i < mapArray.GetLength(0) && j >= 0 && j < mapArray.GetLength(1))
                 {
-                    if (mapArray[i,j] != 0 && i!=x && i!=prevX && j!=z && j!=prevZ)
+                    if(mapArray[i,j] != 0 && i != x && i != prevX && j != z && j != prevZ)
                     {
                         return false;
                     }
@@ -218,7 +218,8 @@ public class MapGeneration : MonoBehaviour
         if(list.Count != 0)
         {
             return avg / list.Count;
-        } else
+        }
+        else
         {
             return -1f;
         }
@@ -227,9 +228,9 @@ public class MapGeneration : MonoBehaviour
     //generates graph for pathfinding
     private void GenerateGraph()
     {
-        for (int i = 0; i < mapArray.GetLength(0); i++)
+        for(int i = 0; i < mapArray.GetLength(0); i++)
         {
-            for (int j = 0; j < mapArray.GetLength(1); j++)
+            for(int j = 0; j < mapArray.GetLength(1); j++)
             {
                 if(mapArray[i,j] == 0)
                 {
@@ -239,13 +240,13 @@ public class MapGeneration : MonoBehaviour
                         n = new Node("(" + i + "," + j + ")", i, j);
                         graph.AddNode(n);
                     }
-                    for (int xn=i-1; xn<=i+1; xn++)
+                    for(int xn = i-1; xn <= i+1; xn++)
                     {
-                        for (int zn=j-1; zn<=j+1; zn++)
+                        for(int zn = j-1; zn <= j+1; zn++)
                         {
-                            if (xn>=0 && xn<mapArray.GetLength(0) && zn>=0 && zn<mapArray.GetLength(1))
+                            if(xn >= 0 && xn < mapArray.GetLength(0) && zn >= 0 && zn < mapArray.GetLength(1))
                             {
-                                if (mapArray[xn, zn]==0)
+                                if(mapArray[xn, zn] == 0)
                                 {
                                     Node neig = GetNodeByMapLocation(xn, zn);
                                    
@@ -255,13 +256,14 @@ public class MapGeneration : MonoBehaviour
                                         graph.AddNode(neig);
                                     }
 
-                                    if (!n.description.Equals(neig.description))
+                                    if(!n.description.Equals(neig.description))
                                     {
                                         if(i != neig.i && j != neig.j)
                                         {
                                             Edge e = new Edge(n, neig, Mathf.Sqrt(2));
                                             graph.AddEdge(e);
-                                        } else
+                                        }
+                                        else
                                         {
                                             Edge e = new Edge(n, neig);
                                             graph.AddEdge(e);
@@ -276,26 +278,6 @@ public class MapGeneration : MonoBehaviour
         }
     }
 
-    //gets node from mapArray indexes
-    private Node GetNodeByMapLocation(int i, int j)
-    {
-        Node[] nodes = graph.getNodes();
-        foreach(Node n in nodes)
-        {
-            if(n.i == i && n.j == j)
-            {
-                return n;
-            }
-        }
-        return null;
-    }
-
-    //gets position from mapArray indexes
-    public Vector3 GetMapLocationFromArray(Vector3 startPoint, int i, int j)
-    {
-        return new Vector3(startPoint.x + i, 0.25f, startPoint.z + j);
-    }
-
     //set player, sentinels and landmark in the map
     private void GenerateCharacters()
     {
@@ -304,11 +286,11 @@ public class MapGeneration : MonoBehaviour
             int i = Random.Range(0, mapArray.GetLength(0));
             int j = Random.Range(0, mapArray.GetLength(1));
 
-            if (mapArray[i, j] == 0)
+            if(mapArray[i, j] == 0)
             {
                 Vector3 sentinelPos = GetMapLocationFromArray(startPoint, i, j);
                 bool enoughDistance = EnoughDistance(sentinelPos);
-                if (enoughDistance)
+                if(enoughDistance)
                 {
                     GameObject s = Instantiate(sentinel, sentinelPos, Quaternion.identity);
                     float angle = 0f;
@@ -316,10 +298,12 @@ public class MapGeneration : MonoBehaviour
                     if(dir == 0)
                     {
                         angle = -90f;
-                    } else if(dir == 2)
+                    }
+                    else if(dir == 2)
                     {
                         angle = 90f;
-                    } else if(dir == 3)
+                    }
+                    else if(dir == 3)
                     {
                         angle = 180f;
                     }
@@ -329,11 +313,12 @@ public class MapGeneration : MonoBehaviour
             }
         }
 
-        while (GameObject.FindWithTag("Agent") == null)
+        while(GameObject.FindWithTag("Agent") == null)
         {
             int i = Random.Range(0, mapArray.GetLength(0));
             int j = Random.Range(0, mapArray.GetLength(1));
-            if (mapArray[i, j] == 0)
+
+            if(mapArray[i, j] == 0)
             {
                 Vector3 agentPos = GetMapLocationFromArray(startPoint, i, j);
                 bool enoughDistance = EnoughDistance(agentPos);
@@ -363,25 +348,31 @@ public class MapGeneration : MonoBehaviour
                 }
             }
             return true;
-        } else
+        }
+        else
         {
             return true;
         }
     }
 
-    private void DebugPrint()
+    //gets node from mapArray indexes
+    public Node GetNodeByMapLocation(int i, int j)
     {
-        string print = "";
-        for (int i = 0; i < mapArray.GetLength(0); i++)
+        Node[] nodes = graph.getNodes();
+        foreach (Node n in nodes)
         {
-            for (int j = 0; j < mapArray.GetLength(1); j++)
+            if (n.i == i && n.j == j)
             {
-                print += mapArray[i, j] + " ";
-
+                return n;
             }
-            print += "\n";
         }
-        Debug.Log(print);
+        return null;
+    }
+
+    //gets position from mapArray indexes
+    public Vector3 GetMapLocationFromArray(Vector3 startPoint, int i, int j)
+    {
+        return new Vector3(startPoint.x + i, 0.25f, startPoint.z + j);
     }
 
 }

@@ -1,7 +1,4 @@
-﻿
-using System;
-using System.Linq;
-using System.Collections;
+﻿using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -64,7 +61,7 @@ public class Graph {
 
 	public Node GetNodeByGameobject(GameObject o)
     {
-		foreach (KeyValuePair<Node, List<Edge>> entry in data)
+		foreach(KeyValuePair<Node, List<Edge>> entry in data)
         {
 			if(entry.Key.sceneObject == o)
             {
@@ -73,6 +70,5 @@ public class Graph {
         }
 		return null;
 	}
-
 
 }

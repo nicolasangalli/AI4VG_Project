@@ -36,13 +36,13 @@ public class AgentSM : MonoBehaviour
 
         prevNode = null;
         currentNode = null;
-        for (int i = 0; i < map.mapArray.GetLength(0); i++)
+        for(int i = 0; i < map.mapArray.GetLength(0); i++)
         {
-            for (int j = 0; j < map.mapArray.GetLength(1); j++)
+            for(int j = 0; j < map.mapArray.GetLength(1); j++)
             {
                 if(map.mapArray[i,j] == 1)
                 {
-                    currentNode = GetNodeByMapLocation(i, j);
+                    currentNode = map.GetNodeByMapLocation(i, j);
                     break;
                 }
             }
@@ -99,7 +99,7 @@ public class AgentSM : MonoBehaviour
     {
         if(fsm != null)
         {
-            if (gameObject.GetComponent<MeshRenderer>().material.color == alarmMaterial.color)
+            if(gameObject.GetComponent<MeshRenderer>().material.color == alarmMaterial.color)
             {
                 gameObject.GetComponent<MeshRenderer>().material = quietMaterial;
             }
@@ -135,7 +135,7 @@ public class AgentSM : MonoBehaviour
         {
             targetNode = oldTargetNode;
             map.mapArray[targetNode.i, targetNode.j] = 4;
-            map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j) - new Vector3(0f, 0.25f, 0f);
+            map.landmark.transform.position = map.GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j) - new Vector3(0f, 0.25f, 0f);
             map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
             map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = true;
         }
@@ -143,13 +143,13 @@ public class AgentSM : MonoBehaviour
         {
             int i = Random.Range(0, map.mapArray.GetLength(0));
             int j = Random.Range(0, map.mapArray.GetLength(1));
-            while (map.mapArray[i, j] != 4)
+            while(map.mapArray[i, j] != 4)
             {
-                if (map.mapArray[i, j] == 0)
+                if(map.mapArray[i, j] == 0)
                 {
-                    targetNode = GetNodeByMapLocation(i, j);
+                    targetNode = map.GetNodeByMapLocation(i, j);
                     map.mapArray[targetNode.i, targetNode.j] = 4;
-                    map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, i, j) - new Vector3(0f, 0.25f, 0f);
+                    map.landmark.transform.position = map.GetMapLocationFromArray(map.startPoint, i, j) - new Vector3(0f, 0.25f, 0f);
                     map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
                     map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = true;
                 }
@@ -165,7 +165,7 @@ public class AgentSM : MonoBehaviour
 
     private void ReachTarget()
     {
-        if (path == null)
+        if(path == null)
         {   
             CalcPath();
             nextPathNode = true;
@@ -180,14 +180,14 @@ public class AgentSM : MonoBehaviour
                     currentNode = path[pathCounter].from;
                     map.mapArray[currentNode.i, currentNode.j] = 1;
 
-                    if (pathCounter > 0)
+                    if(pathCounter > 0)
                     {
                         prevNode = path[pathCounter - 1].from;
                         map.mapArray[prevNode.i, prevNode.j] = 0;
                     }
                     nextNode = path[pathCounter].to;
 
-                    midPosition.transform.position = GetMapLocationFromArray(map.startPoint, nextNode.i, nextNode.j) - new Vector3(0f, 0.25f, 0f);
+                    midPosition.transform.position = map.GetMapLocationFromArray(map.startPoint, nextNode.i, nextNode.j) - new Vector3(0f, 0.25f, 0f);
                     gameObject.GetComponent<KMoveTo>().destination = midPosition.transform;
 
                     pathCounter++;
@@ -203,7 +203,8 @@ public class AgentSM : MonoBehaviour
                     if(fsm.current == cover) //reached the cover target
                     {
                         coverReached = true;
-                    } else //reached standard target, goes to the next one
+                    }
+                    else //reached standard target, goes to the next one
                     {
                         ResetPath();
                         SetTarget();
@@ -226,18 +227,18 @@ public class AgentSM : MonoBehaviour
         List<Node> candidateNodes = new List<Node>();
         int step = 0;
 
-        while (candidateNodes.Count == 0)
+        while(candidateNodes.Count == 0)
         {
-            for (int x = currentNode.i - step; x <= currentNode.i + step; x++)
+            for(int x = currentNode.i-step; x <= currentNode.i+step; x++)
             {
-                for (int z = currentNode.j - step; z <= currentNode.j + step; z++)
+                for(int z = currentNode.j-step; z <= currentNode.j+step; z++)
                 {
-                    if (x >= 0 && x < map.mapArray.GetLength(0) && z >= 0 && z < map.mapArray.GetLength(1))
+                    if(x >= 0 && x < map.mapArray.GetLength(0) && z >= 0 && z < map.mapArray.GetLength(1))
                     {
-                        if (map.mapArray[x, z] == 0)
+                        if(map.mapArray[x, z] == 0)
                         {
-                            Node candidate = GetNodeByMapLocation(x, z);
-                            if (candidate.inSentinelView == false)
+                            Node candidate = map.GetNodeByMapLocation(x, z);
+                            if(candidate.inSentinelView == false)
                             {
                                 candidateNodes.Add(candidate);
                             }
@@ -251,7 +252,7 @@ public class AgentSM : MonoBehaviour
         int index = Random.Range(0, candidateNodes.Count);
         targetNode = candidateNodes[index];
         map.mapArray[targetNode.i, targetNode.j] = 4;
-        map.landmark.transform.position = GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j) - new Vector3(0f, 0.25f, 0f);
+        map.landmark.transform.position = map.GetMapLocationFromArray(map.startPoint, targetNode.i, targetNode.j) - new Vector3(0f, 0.25f, 0f);
         map.landmark.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
         map.landmark.transform.GetChild(1).GetComponent<MeshRenderer>().enabled = false;
     }
@@ -292,8 +293,8 @@ public class AgentSM : MonoBehaviour
 
     private float ManhattanEstimator(Node from, Node to)
     {
-        Vector3 posFrom = GetMapLocationFromArray(map.startPoint, from.i, from.j);
-        Vector3 posTo = GetMapLocationFromArray(map.startPoint, to.i, to.j);
+        Vector3 posFrom = map.GetMapLocationFromArray(map.startPoint, from.i, from.j);
+        Vector3 posTo = map.GetMapLocationFromArray(map.startPoint, to.i, to.j);
 
         float estimation = Mathf.Abs(posFrom.x - posTo.x) + Mathf.Abs(posFrom.z - posFrom.z);
         return estimation;
@@ -313,7 +314,7 @@ public class AgentSM : MonoBehaviour
 
     private bool MapNotAlarm()
     {
-        if (map.gameObject.GetComponent<MapSM>().GetActiveSentinels().Count == 0 && coverReached == true)
+        if(map.gameObject.GetComponent<MapSM>().GetActiveSentinels().Count == 0 && coverReached == true)
         {
             coverReached = false;
             return true;
@@ -336,47 +337,9 @@ public class AgentSM : MonoBehaviour
         }
     }
 
-    private Node GetNodeByMapLocation(int i, int j)
-    {
-        Node[] nodes = map.graph.getNodes();
-        foreach (Node n in nodes)
-        {
-            if (n.i == i && n.j == j)
-            {
-                return n;
-            }
-        }
-        return null;
-    }
-
-    private Vector3 GetMapLocationFromArray(Vector3 startPoint, int i, int j)
-    {
-        return new Vector3(startPoint.x + i, 0.25f, startPoint.z + j);
-    }
-
-    private Node GetNearestNode(Vector3 agentPos)
-    {
-        float minDistance = float.MaxValue;
-        Node nearestNode = null;
-
-        Node[] nodes = map.graph.getNodes();
-        foreach(Node n in nodes)
-        {
-            Vector3 pos = GetMapLocationFromArray(map.startPoint, n.i, n.j);
-            float distance = (pos - agentPos).magnitude;
-            if(distance < minDistance && map.mapArray[n.i, n.j] == 0)
-            {
-                minDistance = distance;
-                nearestNode = n;
-            }
-        }
-
-        return nearestNode;
-    }
-
     private IEnumerator Patrol()
     {
-        while (true)
+        while(true)
         {
             fsm.Update();
             yield return new WaitForSeconds(reactionTime);
