@@ -6,16 +6,15 @@ public class SentinelSM : MonoBehaviour
 {
 
 	public float reactionTime = 0.1f;
+	public GameObject node;
 	[Range(90, 120)]
 	public int fov = 90;
-	[Range(1f, 4f)]
-	public float distanceOfView = 2f;
-	public GameObject node;
+	[Range(1, 4)]
+	public int distanceOfView = 2;
 
 	private int stepOfView;
 	private GameObject map;
 	private FSM fsm;
-
 	private bool showed;
 
 
@@ -34,8 +33,8 @@ public class SentinelSM : MonoBehaviour
 		FSMState visible = new FSMState();
 		visible.enterActions.Add(RemoveSentinel);
 
-		FSMTransition t1 = new FSMTransition(PlayerVisible);
-		FSMTransition t2 = new FSMTransition(PlayerNotVisible);
+		FSMTransition t1 = new FSMTransition(AgentVisible);
+		FSMTransition t2 = new FSMTransition(AgentNotVisible);
 
 		hide.AddTransition(t1, alarm);
 		alarm.AddTransition(t2, visible);
@@ -108,7 +107,7 @@ public class SentinelSM : MonoBehaviour
 			
 			if(n.inSentinelView)
             {
-				n.sceneObject = Instantiate(map.GetComponent<MapGeneration>().node, map.GetComponent<MapGeneration>().GetMapLocationFromArray(map.GetComponent<MapGeneration>().startPoint, n.i, n.j), Quaternion.identity);
+				n.sceneObject = Instantiate(node, map.GetComponent<MapGeneration>().GetMapLocationFromArray(map.GetComponent<MapGeneration>().startPoint, n.i, n.j), Quaternion.identity);
 			}
 		}
 
@@ -151,7 +150,7 @@ public class SentinelSM : MonoBehaviour
 		map.GetComponent<MapSM>().RemoveActiveSentinel(gameObject);
     }
 
-	private bool PlayerVisible()
+	private bool AgentVisible()
     {
 		Vector3 vector = transform.forward * distanceOfView;
 
@@ -179,9 +178,9 @@ public class SentinelSM : MonoBehaviour
 		return false;
 	}
 
-	private bool PlayerNotVisible()
+	private bool AgentNotVisible()
 	{
-		return !PlayerVisible();
+		return !AgentVisible();
 	}
 
 	private IEnumerator Patrol()

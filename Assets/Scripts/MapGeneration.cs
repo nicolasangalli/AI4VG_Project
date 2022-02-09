@@ -5,26 +5,25 @@ using UnityEngine;
 public class MapGeneration : MonoBehaviour
 {
     public GameObject obstacle; //prefab
-    [Range(0, 100)]
-    public int obstacleProb = 35;
     public GameObject agent; //istance
     public GameObject sentinel; //prefab
-    [Range(1, 3)]
-    public int nSentinel = 3;
     public GameObject landmark; //istance
-    public GameObject node; //used by sentinel to mark node
+    [Range(0, 3)]
+    public int nSentinel = 3;
 
     [HideInInspector]
     public Vector3 startPoint;
     public int[,] mapArray;
     public Graph graph;
 
+    private int obstacleProb;
     private bool mapGenerated;
 
    
     void Start()
     {
         Application.targetFrameRate = 60;
+        obstacleProb = 35;
         mapGenerated = false;
 
         float xSize = gameObject.GetComponent<MeshFilter>().mesh.bounds.size.x;

@@ -410,12 +410,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   obstacle: {fileID: 3520382483482137321, guid: f0a419e3a779141b780027154bc1c646, type: 3}
-  obstacleProb: 35
   agent: {fileID: 8584145401203932126, guid: 66ab8a02c802143e487c3bb2012739d7, type: 3}
   sentinel: {fileID: 2168816773573861913, guid: 9669f90097d2a4b7c8ab24caa49877d9, type: 3}
-  nSentinel: 3
   landmark: {fileID: 1688431507817098, guid: 947be8148d471475fb9c3d5fb2ce36a4, type: 3}
-  node: {fileID: 3209594342910113975, guid: bffb4702f2f7c48da8057008d1c333cf, type: 3}
+  nSentinel: 3
   startPoint: {x: 0, y: 0, z: 0}
 --- !u!114 &2077074560
 MonoBehaviour:
