@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -56,13 +57,39 @@ public class MapGeneration : MonoBehaviour
         {
             GenerateCharacters();
 
-            gameObject.GetComponent<MapSM>().enabled = true;
-            sentinel.GetComponent<SentinelSM>().enabled = true;
-            agent.GetComponent<KMoveTo>().enabled = true;
-            agent.GetComponent<AgentSM>().enabled = true;
-            
+            StartCoroutine(ShowCharacters());
+
             mapGenerated = false;
         }
+    }
+
+    IEnumerator ShowCharacters()
+    {
+        yield return new WaitForSecondsRealtime(2f);
+        GameObject[] sentinels = GameObject.FindGameObjectsWithTag("Sentinel");
+        int count = 1;
+        foreach(GameObject sentinel in sentinels)
+        {
+            sentinel.transform.GetChild(0).LookAt(GameObject.FindWithTag("MainCamera").transform);
+            sentinel.GetComponent<MeshRenderer>().enabled = true;
+            Debug.Log("Sentinel n: " + count);
+            count++;
+            yield return new WaitForSecondsRealtime(3f);
+        }
+
+        agent.GetComponent<MeshRenderer>().enabled = true;
+        agent.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = true;
+        Debug.Log("Agent");
+        yield return new WaitForSecondsRealtime(3f);
+
+        gameObject.GetComponent<MapSM>().enabled = true;
+        foreach(GameObject sentinel in sentinels)
+        {
+            sentinel.GetComponent<SentinelSM>().enabled = true;
+        }
+        agent.GetComponent<KMoveTo>().enabled = true;
+        agent.GetComponent<AgentSM>().enabled = true;
+        Debug.Log("Start");
     }
 
     //generates random position for obstacles and instantiate them
@@ -72,21 +99,21 @@ public class MapGeneration : MonoBehaviour
         {
             for(int j = 1; j < mapArray.GetLength(1)-1; j++)
             {
-                if(mapArray[i,j] == 0) //check if the point is not already visited
+                int n = Random.Range(0, 100);
+                if(n < obstacleProb)
                 {
-                    int x = i;  //point visited at this step k
-                    int z = j;  //point visited at this step k
-                    int prevX = i;  //point visited in the prev step of k
-                    int prevZ = j;  //point visited in the prev step of k
-                    int direction = Random.Range(1, 5); //direction of multidimensional obstacle creation (N, E, S, W)
-
-                    int obstacleLength = Random.Range(1, 3); //choose the obstacle length
-                    for(int k = 1; k <= obstacleLength; k++)
+                    if(mapArray[i, j] == 0) //check if the point is not already visited
                     {
-                        if(FreePoint(x, z, prevX, prevZ))
+                        int x = i;  //point visited at this step k
+                        int z = j;  //point visited at this step k
+                        int prevX = i;  //point visited in the prev step of k
+                        int prevZ = j;  //point visited in the prev step of k
+                        int direction = Random.Range(1, 5); //direction of multidimensional obstacle creation (N, E, S, W)
+
+                        int obstacleLength = Random.Range(1, 3); //choose the obstacle length
+                        for(int k = 1; k <= obstacleLength; k++)
                         {
-                            int n = Random.Range(0, 100);
-                            if(n < obstacleProb)
+                            if(FreePoint(x, z, prevX, prevZ))
                             {
                                 mapArray[x, z] = 1;
 
@@ -109,16 +136,11 @@ public class MapGeneration : MonoBehaviour
                                 {
                                     x -= 1;
                                 }
-                                
                             }
                             else
                             {
                                 break;
                             }
-                        }
-                        else
-                        {
-                            break;
                         }
                     }
                 }
